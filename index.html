@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Amazon Stock | Multi-Tool Suite for Amazon Sellers</title>
+    <!-- Google Fonts + Font Awesome 6 -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f8fafc;
+            color: #1e293b;
+            line-height: 1.5;
+            scroll-behavior: smooth;
+        }
+
+        /* Blue Theme Variables */
+        :root {
+            --primary-blue: #1e40af;
+            --primary-dark: #1e3a8a;
+            --primary-light: #3b82f6;
+            --accent-blue: #0f172a;
+            --gray-bg: #f1f5f9;
+            --card-white: #ffffff;
+            --shadow-sm: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.02);
+            --shadow-hover: 0 20px 30px -12px rgba(0, 0, 0, 0.15);
+            --border-radius: 20px;
+            --btn-radius: 40px;
+        }
+
+        /* container */
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        /* HEADER */
+        .header {
+            background: white;
+            backdrop-filter: blur(0px);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            padding: 16px 0;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            background: rgba(255,255,255,0.98);
+        }
+        .header-flex {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+        }
+        .logo h1 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            letter-spacing: -0.3px;
+        }
+        .nav {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 28px;
+            align-items: center;
+        }
+        .nav a {
+            text-decoration: none;
+            font-weight: 500;
+            color: #1e293b;
+            transition: color 0.2s;
+        }
+        .nav a:hover {
+            color: var(--primary-light);
+        }
+        .contact-email {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: #eef2ff;
+            padding: 6px 14px;
+            border-radius: 40px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: #1e40af;
+        }
+        .contact-email i {
+            font-size: 0.9rem;
+        }
+        .contact-email a {
+            color: #1e40af;
+            text-decoration: none;
+        }
+
+        /* HERO */
+        .hero {
+            padding: 64px 0 48px;
+            text-align: center;
+        }
+        .hero h2 {
+            font-size: 2.7rem;
+            font-weight: 700;
+            background: linear-gradient(to right, #0f2b5c, #1e4a8a);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            max-width: 800px;
+            margin: 0 auto 16px;
+            line-height: 1.2;
+        }
+        .hero p {
+            font-size: 1.2rem;
+            color: #334155;
+            max-width: 700px;
+            margin: 0 auto 28px;
+        }
+        .cta-btn {
+            background: #1e40af;
+            color: white;
+            border: none;
+            padding: 14px 32px;
+            font-size: 1rem;
+            font-weight: 600;
+            border-radius: var(--btn-radius);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 8px rgba(30,64,175,0.2);
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .cta-btn:hover {
+            background: #1e3a8a;
+            transform: translateY(-3px);
+            box-shadow: 0 12px 20px -10px #1e40af80;
+        }
+        .hero-icons {
+            display: flex;
+            justify-content: center;
+            gap: 36px;
+            margin-top: 40px;
+            flex-wrap: wrap;
+            color: #2c5f9a;
+        }
+        .hero-icons i {
+            font-size: 2.2rem;
+            background: white;
+            padding: 16px;
+            border-radius: 60px;
+            box-shadow: var(--shadow-sm);
+            transition: transform 0.2s;
+        }
+        .hero-icons i:hover {
+            transform: translateY(-5px);
+        }
+
+        /* SEARCH BAR */
+        .search-section {
+            margin: 32px auto 48px;
+            max-width: 600px;
+        }
+        .search-wrapper {
+            background: white;
+            border-radius: 60px;
+            padding: 6px 6px 6px 24px;
+            box-shadow: var(--shadow-sm);
+            display: flex;
+            align-items: center;
+            border: 1px solid #e2e8f0;
+            transition: all 0.2s;
+        }
+        .search-wrapper:focus-within {
+            border-color: var(--primary-light);
+            box-shadow: 0 0 0 3px rgba(59,130,246,0.2);
+        }
+        .search-wrapper i {
+            color: #94a3b8;
+            font-size: 1.2rem;
+        }
+        .search-wrapper input {
+            flex: 1;
+            border: none;
+            padding: 16px 12px;
+            font-size: 1rem;
+            background: transparent;
+            outline: none;
+            font-weight: 400;
+        }
+        .search-wrapper input::placeholder {
+            color: #cbd5e1;
+        }
+
+        /* TOOLS SECTION (Grid) */
+        .tools-section {
+            padding: 24px 0 64px;
+        }
+        .section-title {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            color: #0f2b5c;
+            border-left: 5px solid #3b82f6;
+            padding-left: 20px;
+        }
+        .section-sub {
+            color: #475569;
+            margin-bottom: 40px;
+            padding-left: 26px;
+        }
+        .tools-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 30px;
+        }
+        /* Tool Card */
+        .tool-card {
+            background: var(--card-white);
+            border-radius: 24px;
+            padding: 24px 20px 26px;
+            transition: all 0.25s ease;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.02), 0 2px 4px rgba(0,0,0,0.02);
+            border: 1px solid #eef2ff;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+        .tool-card:hover {
+            transform: translateY(-6px);
+            box-shadow: var(--shadow-hover);
+            border-color: #bfdbfe;
+        }
+        .card-icon {
+            font-size: 2.6rem;
+            color: #1e40af;
+            margin-bottom: 18px;
+        }
+        .tool-card h3 {
+            font-size: 1.45rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            letter-spacing: -0.2px;
+        }
+        .tool-desc {
+            color: #475569;
+            font-size: 0.9rem;
+            line-height: 1.45;
+            margin-bottom: 24px;
+            flex: 1;
+        }
+        .tool-btn {
+            background: transparent;
+            border: 1.5px solid #3b82f6;
+            color: #1e40af;
+            font-weight: 600;
+            padding: 10px 0;
+            border-radius: 40px;
+            text-align: center;
+            text-decoration: none;
+            transition: all 0.2s;
+            display: inline-block;
+            width: 100%;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+        .tool-btn:hover {
+            background: #1e40af;
+            color: white;
+            border-color: #1e40af;
+        }
+        .no-results {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 60px 20px;
+            background: white;
+            border-radius: 40px;
+            font-size: 1.2rem;
+            color: #475569;
+        }
+
+        /* FOOTER */
+        .footer {
+            background: #0f172a;
+            color: #cbd5e1;
+            padding: 48px 0 32px;
+            margin-top: 40px;
+        }
+        .footer-inner {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 28px;
+        }
+        .footer-brand h3 {
+            color: white;
+            font-weight: 700;
+            font-size: 1.5rem;
+            margin-bottom: 6px;
+        }
+        .footer-brand p {
+            font-size: 0.85rem;
+            max-width: 280px;
+        }
+        .footer-email i, .footer-email a {
+            color: #93c5fd;
+            text-decoration: none;
+        }
+        .footer-email a:hover {
+            text-decoration: underline;
+            color: white;
+        }
+        .footer-links {
+            display: flex;
+            gap: 28px;
+        }
+        .footer-links a {
+            color: #cbd5e1;
+            text-decoration: none;
+            font-size: 0.85rem;
+            transition: color 0.2s;
+        }
+        .footer-links a:hover {
+            color: #3b82f6;
+        }
+        hr {
+            margin: 32px 0 20px;
+            border-color: #1e293b;
+        }
+        .copyright {
+            font-size: 0.75rem;
+            text-align: center;
+            color: #64748b;
+        }
+
+        @media (max-width: 768px) {
+            .header-flex {
+                flex-direction: column;
+                align-items: stretch;
+                text-align: center;
+            }
+            .nav {
+                justify-content: center;
+            }
+            .contact-email {
+                justify-content: center;
+            }
+            .hero h2 {
+                font-size: 1.9rem;
+            }
+            .hero p {
+                font-size: 1rem;
+            }
+            .tools-grid {
+                gap: 20px;
+            }
+            .footer-inner {
+                flex-direction: column;
+                text-align: center;
+            }
+            .section-title {
+                font-size: 1.7rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="container header-flex">
+            <div class="logo">
+                <h1>Amazon Stock</h1>
+            </div>
+            <div class="nav">
+                <a href="#">Home</a>
+                <a href="#tools-section-main">Tools</a>
+                <a href="#footer-contact">Contact</a>
+                <div class="contact-email">
+                    <i class="fas fa-envelope"></i>
+                    <a href="mailto:contact@amazonstock.net">contact@amazonstock.net</a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <div class="container">
+            <!-- Hero Section -->
+            <section class="hero">
+                <h2>Grow Your Amazon Business with Data-Driven Insights</h2>
+                <p>Use advanced Amazon seller tools to track stock, estimate sales, discover profitable products, and boost your revenue.</p>
+                <button class="cta-btn" id="exploreToolsBtn">Explore Tools <i class="fas fa-arrow-right"></i></button>
+                <div class="hero-icons">
+                    <i class="fas fa-chart-line"></i>
+                    <i class="fas fa-boxes"></i>
+                    <i class="fas fa-search-dollar"></i>
+                    <i class="fas fa-calculator"></i>
+                    <i class="fas fa-chart-simple"></i>
+                </div>
+            </section>
+
+            <!-- Search Bar -->
+            <div class="search-section">
+                <div class="search-wrapper">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="searchInput" placeholder="Search a tool…" autocomplete="off">
+                </div>
+            </div>
+        </div>
+
+        <!-- Tools Dynamic Grid Section -->
+        <div class="container tools-section" id="tools-section-main">
+            <div class="section-title">⚡ Amazon Seller Toolkit</div>
+            <div class="section-sub">Powerful analytics, pricing, stock & research tools — all in one place</div>
+            <div id="toolsGridContainer" class="tools-grid">
+                <!-- Dynamic cards injected via JS -->
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer" id="footer-contact">
+        <div class="container">
+            <div class="footer-inner">
+                <div class="footer-brand">
+                    <h3>Amazon Stock</h3>
+                    <p>Grow Your Amazon Business with Data-Driven Insights.</p>
+                </div>
+                <div class="footer-email">
+                    <i class="fas fa-envelope"></i> 
+                    <a href="mailto:contact@amazonstock.net">contact@amazonstock.net</a>
+                </div>
+                <div class="footer-links">
+                    <a href="#">Privacy Policy</a>
+                    <a href="#">Terms of Use</a>
+                </div>
+            </div>
+            <hr>
+            <div class="copyright">
+                &copy; 2025 Amazon Stock — smart tools for serious sellers.
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // ---------- TOOL DATABASE (12 tools, matching requirements) ----------
+        const toolsData = [
+            {
+                name: "Amazon Inventory Checker",
+                description: "Real-time stock status, out-of-stock alerts & stock history across US, UK, CA, DE.",
+                icon: "fas fa-warehouse",
+                link: "#"
+            },
+            {
+                name: "Amazon ASIN Lookup Tool",
+                description: "Get product title, category, brand, price, ratings & seller info from any ASIN.",
+                icon: "fas fa-magnifying-glass-chart",
+                link: "#"
+            },
+            {
+                name: "Amazon Price Tracker",
+                description: "Price history charts, drop notifications, lowest price alerts & competitor comparison.",
+                icon: "fas fa-chart-line",
+                link: "#"
+            },
+            {
+                name: "Amazon FBA Fee Calculator",
+                description: "Referral fee, FBA fulfillment cost, net profit estimation & ROI calculation.",
+                icon: "fas fa-calculator",
+                link: "#"
+            },
+            {
+                name: "Amazon Product Research Tool",
+                description: "Estimated monthly sales, revenue projection, competition score & trend analysis.",
+                icon: "fas fa-chart-pie",
+                link: "#"
+            },
+            {
+                name: "Amazon Sales Estimator",
+                description: "Category-based estimates, monthly sales prediction & revenue projections from BSR.",
+                icon: "fas fa-chart-simple",
+                link: "#"
+            },
+            {
+                name: "Amazon Keyword Research Tool",
+                description: "Search volume, competition score, long-tail keywords & related keyword suggestions.",
+                icon: "fas fa-keyboard",
+                link: "#"
+            },
+            {
+                name: "Amazon Buy Box Tracker",
+                description: "Buy Box history, seller monitoring & instant notifications when ownership changes.",
+                icon: "fas fa-crown",
+                link: "#"
+            },
+            {
+                name: "Amazon Restock Calculator",
+                description: "Days of inventory left, recommended reorder quantity & sales velocity tracking.",
+                icon: "fas fa-boxes-stacked",
+                link: "#"
+            },
+            {
+                name: "Amazon Profit Calculator",
+                description: "Cost inputs, Amazon fees, shipping costs, ROI and margin calculations.",
+                icon: "fas fa-coins",
+                link: "#"
+            },
+            {
+                name: "Amazon Listing Optimizer",
+                description: "SEO score, title analysis, bullet point optimization & keyword density check.",
+                icon: "fas fa-file-alt",
+                link: "#"
+            },
+            {
+                name: "Amazon Seller Tools Suite",
+                description: "All-in-one: ASIN Lookup, FBA Calc, Profit Calc, Keyword Research, Sales Estimator, Inventory Checker, Buy Box & more.",
+                icon: "fas fa-cubes",
+                link: "#"
+            }
+        ];
+
+        // Helper: render dynamic grid based on search filter
+        function renderTools(filterText = "") {
+            const container = document.getElementById("toolsGridContainer");
+            if (!container) return;
+            const lowerFilter = filterText.toLowerCase().trim();
+            let filtered = toolsData;
+            if (lowerFilter !== "") {
+                filtered = toolsData.filter(tool => 
+                    tool.name.toLowerCase().includes(lowerFilter) || 
+                    tool.description.toLowerCase().includes(lowerFilter)
+                );
+            }
+
+            if (filtered.length === 0) {
+                container.innerHTML = `<div class="no-results"><i class="fas fa-exclamation-circle"></i> No matching tools found. Try a different keyword.</div>`;
+                return;
+            }
+
+            const cardsHTML = filtered.map(tool => `
+                <div class="tool-card">
+                    <div class="card-icon"><i class="${tool.icon}"></i></div>
+                    <h3>${escapeHtml(tool.name)}</h3>
+                    <div class="tool-desc">${escapeHtml(tool.description)}</div>
+                    <a href="${tool.link}" class="tool-btn" target="_blank">Use Tool <i class="fas fa-arrow-right"></i></a>
+                </div>
+            `).join('');
+
+            container.innerHTML = cardsHTML;
+        }
+
+        // simple XSS escape for tool descriptions
+        function escapeHtml(str) {
+            return str.replace(/[&<>]/g, function(m) {
+                if (m === '&') return '&amp;';
+                if (m === '<') return '&lt;';
+                if (m === '>') return '&gt;';
+                return m;
+            }).replace(/[\uD800-\uDBFF][\uDC00-\uDFFF]/g, function(c) {
+                return c;
+            });
+        }
+
+        // search event & initial load
+        document.addEventListener("DOMContentLoaded", () => {
+            renderTools("");
+            const searchInput = document.getElementById("searchInput");
+            if (searchInput) {
+                searchInput.addEventListener("input", (e) => {
+                    renderTools(e.target.value);
+                });
+            }
+
+            // CTA scroll to tools section
+            const exploreBtn = document.getElementById("exploreToolsBtn");
+            if (exploreBtn) {
+                exploreBtn.addEventListener("click", () => {
+                    document.getElementById("tools-section-main").scrollIntoView({ behavior: "smooth" });
+                });
+            }
+
+            // Navigation links: Home goes to top, Tools scroll, Contact to footer
+            const navLinks = document.querySelectorAll('.nav a');
+            if (navLinks.length) {
+                navLinks.forEach(link => {
+                    link.addEventListener('click', (e) => {
+                        const href = link.getAttribute('href');
+                        if (href === '#') {
+                            e.preventDefault();
+                            window.scrollTo({ top: 0, behavior: 'smooth' });
+                        } else if (href === '#tools-section-main') {
+                            e.preventDefault();
+                            document.getElementById('tools-section-main').scrollIntoView({ behavior: 'smooth' });
+                        } else if (href === '#footer-contact') {
+                            e.preventDefault();
+                            document.getElementById('footer-contact').scrollIntoView({ behavior: 'smooth' });
+                        }
+                    });
+                });
+            }
+
+            // also fallback: any external link placeholders for tool buttons keep '#'
+            // All tool links "#" - no further needed.
+        });
+    </script>
+</body>
+</html>
