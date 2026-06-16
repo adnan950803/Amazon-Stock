@@ -1,0 +1,1507 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Amazon Inventory Checker</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet" />
+
+    <!-- Font Awesome 6 (free) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+
+    <style>
+        /* ─── RESET & BASE ─── */
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --blue-50: #eff6ff;
+            --blue-100: #dbeafe;
+            --blue-200: #bfdbfe;
+            --blue-300: #93c5fd;
+            --blue-400: #60a5fa;
+            --blue-500: #3b82f6;
+            --blue-600: #2563eb;
+            --blue-700: #1d4ed8;
+            --blue-800: #1e40af;
+            --blue-900: #1e3a8a;
+
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-400: #9ca3af;
+            --gray-500: #6b7280;
+            --gray-600: #4b5563;
+            --gray-700: #374151;
+            --gray-800: #1f2937;
+            --gray-900: #111827;
+
+            --green-500: #22c55e;
+            --green-600: #16a34a;
+            --yellow-500: #eab308;
+            --yellow-600: #ca8a04;
+            --red-500: #ef4444;
+            --red-600: #dc2626;
+
+            --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+            --shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
+            --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.07), 0 2px 4px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.08), 0 4px 6px rgba(0, 0, 0, 0.05);
+            --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.08), 0 10px 10px rgba(0, 0, 0, 0.04);
+
+            --radius: 12px;
+            --radius-sm: 8px;
+            --transition: 0.2s ease;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--blue-50);
+            color: var(--gray-800);
+            min-height: 100vh;
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            padding: 24px 16px 48px;
+            line-height: 1.5;
+        }
+
+        /* ─── CONTAINER ─── */
+        .tool-container {
+            max-width: 820px;
+            width: 100%;
+            background: #ffffff;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-xl);
+            padding: 32px 28px 40px;
+            transition: padding 0.2s;
+        }
+
+        /* ─── HEADER ─── */
+        .tool-header {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 6px;
+            flex-wrap: wrap;
+        }
+
+        .tool-header .icon-wrap {
+            width: 48px;
+            height: 48px;
+            background: var(--blue-600);
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .tool-header h1 {
+            font-size: 26px;
+            font-weight: 700;
+            color: var(--gray-900);
+            letter-spacing: -0.3px;
+        }
+
+        .tool-header h1 span {
+            color: var(--blue-600);
+        }
+
+        .tool-sub {
+            color: var(--gray-500);
+            font-size: 15px;
+            margin-left: 62px;
+            margin-top: -2px;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .tool-sub i {
+            color: var(--blue-400);
+            font-size: 14px;
+        }
+
+        /* ─── ALERT BANNER ─── */
+        .alert-banner {
+            display: none;
+            padding: 14px 18px;
+            border-radius: var(--radius-sm);
+            margin-bottom: 20px;
+            font-weight: 500;
+            font-size: 14px;
+            align-items: center;
+            gap: 12px;
+            border-left: 4px solid transparent;
+            animation: slideDown 0.35s ease;
+        }
+
+        .alert-banner.show {
+            display: flex;
+        }
+
+        .alert-banner.warning {
+            background: #fefce8;
+            border-left-color: var(--yellow-500);
+            color: #854d0e;
+        }
+
+        .alert-banner.warning i {
+            color: var(--yellow-500);
+        }
+
+        .alert-banner.danger {
+            background: #fef2f2;
+            border-left-color: var(--red-500);
+            color: #991b1b;
+        }
+
+        .alert-banner.danger i {
+            color: var(--red-500);
+        }
+
+        .alert-banner.success {
+            background: #f0fdf4;
+            border-left-color: var(--green-500);
+            color: #166534;
+        }
+
+        .alert-banner.success i {
+            color: var(--green-500);
+        }
+
+        .alert-banner .close-alert {
+            margin-left: auto;
+            background: none;
+            border: none;
+            font-size: 18px;
+            cursor: pointer;
+            color: inherit;
+            opacity: 0.6;
+            transition: opacity 0.2s;
+            padding: 0 4px;
+        }
+
+        .alert-banner .close-alert:hover {
+            opacity: 1;
+        }
+
+        @keyframes slideDown {
+            0% {
+                opacity: 0;
+                transform: translateY(-12px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ─── INPUT SECTION ─── */
+        .input-section {
+            background: var(--gray-50);
+            border-radius: var(--radius);
+            padding: 20px 22px 24px;
+            margin-bottom: 24px;
+            border: 1px solid var(--gray-200);
+        }
+
+        .input-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .input-row .field-group {
+            flex: 1 1 220px;
+            min-width: 160px;
+        }
+
+        .input-row .field-group.labeled {
+            flex: 0 0 140px;
+        }
+
+        .input-row label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--gray-700);
+            margin-bottom: 5px;
+            letter-spacing: 0.3px;
+        }
+
+        .input-row label i {
+            margin-right: 6px;
+            color: var(--blue-500);
+        }
+
+        .input-row input,
+        .input-row select {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1.5px solid var(--gray-200);
+            border-radius: var(--radius-sm);
+            font-size: 15px;
+            font-family: inherit;
+            background: #fff;
+            color: var(--gray-800);
+            transition: border-color 0.2s, box-shadow 0.2s;
+            outline: none;
+            appearance: auto;
+        }
+
+        .input-row input:focus,
+        .input-row select:focus {
+            border-color: var(--blue-500);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+        }
+
+        .input-row input::placeholder {
+            color: var(--gray-400);
+        }
+
+        .input-row .btn-check {
+            flex: 0 0 auto;
+            padding: 10px 32px;
+            background: var(--blue-600);
+            color: #fff;
+            border: none;
+            border-radius: var(--radius-sm);
+            font-size: 16px;
+            font-weight: 600;
+            font-family: inherit;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s, box-shadow 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 23px;
+            white-space: nowrap;
+            height: 46px;
+        }
+
+        .input-row .btn-check:hover {
+            background: var(--blue-700);
+        }
+
+        .input-row .btn-check:active {
+            transform: scale(0.97);
+        }
+
+        .input-row .btn-check:disabled {
+            background: var(--gray-400);
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .input-row .btn-check i {
+            font-size: 16px;
+        }
+
+        .input-row .btn-check .spinner {
+            display: none;
+            width: 20px;
+            height: 20px;
+            border: 2.5px solid rgba(255, 255, 255, 0.3);
+            border-top: 2.5px solid #fff;
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+        }
+
+        .input-row .btn-check.loading .spinner {
+            display: inline-block;
+        }
+
+        .input-row .btn-check.loading .btn-text {
+            display: none;
+        }
+
+        .input-row .btn-check.loading .btn-icon {
+            display: none;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .input-hint {
+            font-size: 13px;
+            color: var(--gray-400);
+            margin-top: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .input-hint i {
+            font-size: 12px;
+        }
+
+        .input-hint .example {
+            background: var(--gray-200);
+            padding: 2px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            color: var(--gray-600);
+            font-weight: 500;
+        }
+
+        /* ─── RESULTS CARD ─── */
+        .results-card {
+            display: none;
+            background: #fff;
+            border-radius: var(--radius);
+            border: 1px solid var(--gray-200);
+            padding: 22px 24px 26px;
+            margin-bottom: 24px;
+            box-shadow: var(--shadow-sm);
+            animation: fadeUp 0.4s ease;
+        }
+
+        .results-card.show {
+            display: block;
+        }
+
+        @keyframes fadeUp {
+            0% {
+                opacity: 0;
+                transform: translateY(16px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .results-card .product-row {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+            align-items: flex-start;
+        }
+
+        .results-card .product-img {
+            width: 72px;
+            height: 72px;
+            background: var(--gray-100);
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            color: var(--gray-400);
+            flex-shrink: 0;
+            border: 1px solid var(--gray-200);
+        }
+
+        .results-card .product-info {
+            flex: 1;
+            min-width: 180px;
+        }
+
+        .results-card .product-info .product-title {
+            font-size: 17px;
+            font-weight: 600;
+            color: var(--gray-900);
+            line-height: 1.4;
+            margin-bottom: 2px;
+        }
+
+        .results-card .product-info .product-asin {
+            font-size: 13px;
+            color: var(--gray-500);
+            font-weight: 500;
+        }
+
+        .results-card .product-info .product-asin span {
+            background: var(--gray-100);
+            padding: 1px 10px;
+            border-radius: 20px;
+            font-family: monospace;
+            font-size: 12px;
+        }
+
+        .results-card .stock-status {
+            margin-top: 14px;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 12px 20px;
+        }
+
+        .results-card .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 18px 6px 14px;
+            border-radius: 40px;
+            font-weight: 600;
+            font-size: 15px;
+            letter-spacing: 0.2px;
+        }
+
+        .results-card .status-badge i {
+            font-size: 16px;
+        }
+
+        .status-badge.in-stock {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .status-badge.in-stock i {
+            color: var(--green-500);
+        }
+
+        .status-badge.low-stock {
+            background: #fef9c3;
+            color: #854d0e;
+        }
+
+        .status-badge.low-stock i {
+            color: var(--yellow-500);
+        }
+
+        .status-badge.out-of-stock {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .status-badge.out-of-stock i {
+            color: var(--red-500);
+        }
+
+        .status-badge.pre-order {
+            background: #e0e7ff;
+            color: #3730a3;
+        }
+
+        .status-badge.pre-order i {
+            color: var(--blue-600);
+        }
+
+        .results-card .stock-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px 24px;
+            margin-top: 10px;
+            font-size: 14px;
+            color: var(--gray-600);
+        }
+
+        .results-card .stock-meta .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .results-card .stock-meta .meta-item i {
+            color: var(--blue-400);
+            width: 16px;
+            font-size: 14px;
+        }
+
+        .results-card .stock-meta .meta-item .marketplace-tag {
+            background: var(--blue-100);
+            color: var(--blue-700);
+            padding: 1px 12px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 12px;
+            letter-spacing: 0.5px;
+        }
+
+        .results-card .stock-level-bar {
+            margin-top: 14px;
+            background: var(--gray-200);
+            border-radius: 40px;
+            height: 6px;
+            overflow: hidden;
+            width: 100%;
+            max-width: 320px;
+        }
+
+        .results-card .stock-level-bar .fill {
+            height: 100%;
+            border-radius: 40px;
+            transition: width 0.6s ease;
+            width: 0%;
+        }
+
+        .fill.high {
+            background: var(--green-500);
+        }
+        .fill.medium {
+            background: var(--yellow-500);
+        }
+        .fill.low {
+            background: var(--red-500);
+        }
+        .fill.none {
+            background: var(--gray-400);
+        }
+
+        /* ─── STOCK HISTORY ─── */
+        .history-section {
+            margin-top: 8px;
+            border-top: 1px solid var(--gray-200);
+            padding-top: 22px;
+        }
+
+        .history-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .history-header h3 {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--gray-800);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .history-header h3 i {
+            color: var(--blue-500);
+        }
+
+        .history-header .history-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .history-header .history-actions button {
+            padding: 6px 16px;
+            border: 1.5px solid var(--gray-200);
+            border-radius: var(--radius-sm);
+            background: #fff;
+            font-size: 13px;
+            font-weight: 500;
+            font-family: inherit;
+            color: var(--gray-600);
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .history-header .history-actions button:hover {
+            border-color: var(--blue-400);
+            color: var(--blue-600);
+            background: var(--blue-50);
+        }
+
+        .history-header .history-actions button.danger:hover {
+            border-color: var(--red-400);
+            color: var(--red-600);
+            background: #fef2f2;
+        }
+
+        .history-empty {
+            text-align: center;
+            padding: 32px 16px;
+            color: var(--gray-400);
+        }
+
+        .history-empty i {
+            font-size: 40px;
+            display: block;
+            margin-bottom: 10px;
+            color: var(--gray-300);
+        }
+
+        .history-table-wrap {
+            overflow-x: auto;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--gray-200);
+        }
+
+        .history-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+            min-width: 500px;
+        }
+
+        .history-table thead {
+            background: var(--gray-50);
+            border-bottom: 1px solid var(--gray-200);
+        }
+
+        .history-table thead th {
+            padding: 12px 16px;
+            text-align: left;
+            font-weight: 600;
+            color: var(--gray-600);
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .history-table tbody tr {
+            border-bottom: 1px solid var(--gray-100);
+            transition: background 0.15s;
+        }
+
+        .history-table tbody tr:last-child {
+            border-bottom: none;
+        }
+
+        .history-table tbody tr:hover {
+            background: var(--blue-50);
+        }
+
+        .history-table tbody td {
+            padding: 12px 16px;
+            vertical-align: middle;
+        }
+
+        .history-table .status-dot {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-right: 6px;
+        }
+
+        .history-table .status-dot.in-stock {
+            background: var(--green-500);
+        }
+        .history-table .status-dot.low-stock {
+            background: var(--yellow-500);
+        }
+        .history-table .status-dot.out-of-stock {
+            background: var(--red-500);
+        }
+        .history-table .status-dot.pre-order {
+            background: var(--blue-500);
+        }
+
+        .history-table .marketplace-badge {
+            display: inline-block;
+            padding: 1px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            background: var(--gray-200);
+            color: var(--gray-700);
+        }
+
+        .history-table .marketplace-badge.us {
+            background: #dbeafe;
+            color: var(--blue-700);
+        }
+        .history-table .marketplace-badge.uk {
+            background: #fce7f3;
+            color: #9d174d;
+        }
+        .history-table .marketplace-badge.ca {
+            background: #fef3c7;
+            color: #92400e;
+        }
+        .history-table .marketplace-badge.de {
+            background: #e0e7ff;
+            color: #3730a3;
+        }
+
+        .history-table .time-col {
+            font-size: 13px;
+            color: var(--gray-500);
+            white-space: nowrap;
+        }
+
+        .history-count {
+            font-size: 13px;
+            color: var(--gray-400);
+            font-weight: 400;
+            margin-left: 4px;
+        }
+
+        /* ─── RESPONSIVE ─── */
+        @media (max-width: 700px) {
+            .tool-container {
+                padding: 20px 16px 30px;
+            }
+
+            .tool-header h1 {
+                font-size: 21px;
+            }
+            .tool-header .icon-wrap {
+                width: 40px;
+                height: 40px;
+                font-size: 20px;
+            }
+            .tool-sub {
+                margin-left: 0;
+                font-size: 14px;
+                margin-bottom: 18px;
+            }
+
+            .input-section {
+                padding: 16px 16px 18px;
+            }
+
+            .input-row .field-group {
+                flex: 1 1 100%;
+                min-width: unset;
+            }
+            .input-row .field-group.labeled {
+                flex: 1 1 100%;
+            }
+
+            .input-row .btn-check {
+                width: 100%;
+                justify-content: center;
+                margin-top: 4px;
+                height: 48px;
+            }
+
+            .results-card {
+                padding: 18px 16px 20px;
+            }
+            .results-card .product-row {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .results-card .product-img {
+                width: 56px;
+                height: 56px;
+                font-size: 24px;
+            }
+            .results-card .product-info .product-title {
+                font-size: 16px;
+            }
+
+            .results-card .stock-status {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 8px;
+            }
+
+            .results-card .stock-level-bar {
+                max-width: 100%;
+            }
+
+            .history-header {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 10px;
+            }
+            .history-header .history-actions {
+                justify-content: stretch;
+            }
+            .history-header .history-actions button {
+                flex: 1;
+                justify-content: center;
+            }
+
+            .history-table-wrap {
+                border-radius: var(--radius-sm);
+                overflow-x: auto;
+            }
+            .history-table {
+                min-width: 420px;
+                font-size: 13px;
+            }
+            .history-table thead th,
+            .history-table tbody td {
+                padding: 10px 12px;
+            }
+        }
+
+        @media (max-width: 420px) {
+            .tool-container {
+                padding: 14px 12px 24px;
+                border-radius: 10px;
+            }
+
+            .tool-header h1 {
+                font-size: 18px;
+            }
+            .tool-header .icon-wrap {
+                width: 36px;
+                height: 36px;
+                font-size: 17px;
+            }
+
+            .input-row input,
+            .input-row select {
+                font-size: 14px;
+                padding: 9px 12px;
+            }
+            .input-row .btn-check {
+                font-size: 15px;
+                height: 44px;
+            }
+
+            .results-card .product-info .product-title {
+                font-size: 15px;
+            }
+            .results-card .status-badge {
+                font-size: 13px;
+                padding: 4px 14px 4px 10px;
+            }
+            .alert-banner {
+                font-size: 13px;
+                padding: 12px 14px;
+                flex-wrap: wrap;
+            }
+        }
+
+        /* ─── SCROLLBAR ─── */
+        .history-table-wrap::-webkit-scrollbar {
+            height: 6px;
+        }
+        .history-table-wrap::-webkit-scrollbar-track {
+            background: var(--gray-100);
+            border-radius: 10px;
+        }
+        .history-table-wrap::-webkit-scrollbar-thumb {
+            background: var(--gray-300);
+            border-radius: 10px;
+        }
+        .history-table-wrap::-webkit-scrollbar-thumb:hover {
+            background: var(--gray-400);
+        }
+
+        /* ─── UTILITY ─── */
+        .mt-1 {
+            margin-top: 4px;
+        }
+        .text-muted {
+            color: var(--gray-500);
+            font-size: 13px;
+        }
+        .flex-center {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            border: 0;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="tool-container" role="main">
+
+        <!-- ─── HEADER ─── -->
+        <header class="tool-header">
+            <div class="icon-wrap" aria-hidden="true">
+                <i class="fas fa-boxes-stacked"></i>
+            </div>
+            <h1>Amazon <span>Inventory</span></h1>
+        </header>
+        <div class="tool-sub">
+            <i class="fas fa-circle-check"></i>
+            Real‑time stock status &bull; Alerts &bull; History &bull; US &bull; UK &bull; CA &bull; DE
+        </div>
+
+        <!-- ─── ALERT BANNER ─── -->
+        <div id="alertBanner" class="alert-banner" role="alert">
+            <i class="fas fa-circle-exclamation" aria-hidden="true"></i>
+            <span id="alertMessage">Stock alert!</span>
+            <button class="close-alert" id="closeAlert" aria-label="Dismiss alert">
+                <i class="fas fa-xmark"></i>
+            </button>
+        </div>
+
+        <!-- ─── INPUT SECTION ─── -->
+        <section class="input-section" aria-label="Stock checker controls">
+            <div class="input-row">
+                <div class="field-group">
+                    <label for="productInput"><i class="fas fa-link" aria-hidden="true"></i> ASIN or URL</label>
+                    <input
+                    type="text"
+                    id="productInput"
+                    placeholder="e.g. B08N5WRWNW or amazon.com/dp/..."
+                    autocomplete="off"
+                    spellcheck="false"
+                    />
+                </div>
+
+                <div class="field-group labeled">
+                    <label for="marketplaceSelect"><i class="fas fa-globe" aria-hidden="true"></i> Marketplace</label>
+                    <select id="marketplaceSelect">
+                        <option value="us">🇺🇸 US</option>
+                        <option value="uk">🇬🇧 UK</option>
+                        <option value="ca">🇨🇦 CA</option>
+                        <option value="de">🇩🇪 DE</option>
+                    </select>
+                </div>
+
+                <button class="btn-check" id="checkBtn" aria-label="Check stock">
+                    <span class="btn-icon"><i class="fas fa-magnifying-glass" aria-hidden="true"></i></span>
+                    <span class="btn-text">Check Stock</span>
+                    <span class="spinner" aria-hidden="true"></span>
+                </button>
+            </div>
+            <div class="input-hint">
+                <i class="fas fa-info-circle" aria-hidden="true"></i>
+                Paste an Amazon product URL or ASIN.
+                <span class="example">e.g. B08N5WRWNW</span>
+            </div>
+        </section>
+
+        <!-- ─── RESULTS ─── -->
+        <div id="resultsCard" class="results-card" aria-live="polite">
+            <div class="product-row">
+                <div class="product-img" id="productImage" aria-hidden="true">
+                    <i class="fas fa-box"></i>
+                </div>
+                <div class="product-info">
+                    <div class="product-title" id="productTitle">Product Name</div>
+                    <div class="product-asin">
+                        ASIN <span id="productAsin">—</span>
+                    </div>
+                    <div class="stock-status">
+                        <span class="status-badge" id="statusBadge">
+                            <i class="fas fa-circle-check"></i>
+                            <span id="statusText">Checking…</span>
+                        </span>
+                        <span class="text-muted" id="lastChecked"></span>
+                    </div>
+                    <div class="stock-meta">
+                        <span class="meta-item">
+                            <i class="fas fa-tag" aria-hidden="true"></i>
+                            <span id="productPrice">—</span>
+                        </span>
+                        <span class="meta-item">
+                            <i class="fas fa-store" aria-hidden="true"></i>
+                            <span id="productAvailability">—</span>
+                        </span>
+                        <span class="meta-item">
+                            <i class="fas fa-flag" aria-hidden="true"></i>
+                            <span class="marketplace-tag" id="resultMarketplace">US</span>
+                        </span>
+                    </div>
+                    <div class="stock-level-bar">
+                        <div class="fill" id="stockLevelFill" style="width:0%;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ─── HISTORY ─── -->
+        <section class="history-section" aria-label="Stock check history">
+            <div class="history-header">
+                <h3>
+                    <i class="fas fa-clock-rotate-left" aria-hidden="true"></i>
+                    History
+                    <span class="history-count" id="historyCount">(0)</span>
+                </h3>
+                <div class="history-actions">
+                    <button id="exportBtn" title="Export history as CSV">
+                        <i class="fas fa-file-export" aria-hidden="true"></i> Export
+                    </button>
+                    <button id="clearHistoryBtn" class="danger" title="Clear all history">
+                        <i class="fas fa-trash-can" aria-hidden="true"></i> Clear
+                    </button>
+                </div>
+            </div>
+
+            <div id="historyContainer">
+                <!-- populated by JS -->
+            </div>
+        </section>
+
+    </div>
+
+    <script>
+        (function() {
+            'use strict';
+
+            // ─── DOM refs ───
+            const productInput = document.getElementById('productInput');
+            const marketplaceSelect = document.getElementById('marketplaceSelect');
+            const checkBtn = document.getElementById('checkBtn');
+            const resultsCard = document.getElementById('resultsCard');
+            const productTitle = document.getElementById('productTitle');
+            const productAsin = document.getElementById('productAsin');
+            const productImage = document.getElementById('productImage');
+            const statusBadge = document.getElementById('statusBadge');
+            const statusText = document.getElementById('statusText');
+            const lastChecked = document.getElementById('lastChecked');
+            const productPrice = document.getElementById('productPrice');
+            const productAvailability = document.getElementById('productAvailability');
+            const resultMarketplace = document.getElementById('resultMarketplace');
+            const stockLevelFill = document.getElementById('stockLevelFill');
+            const alertBanner = document.getElementById('alertBanner');
+            const alertMessage = document.getElementById('alertMessage');
+            const closeAlertBtn = document.getElementById('closeAlert');
+            const historyContainer = document.getElementById('historyContainer');
+            const historyCount = document.getElementById('historyCount');
+            const clearHistoryBtn = document.getElementById('clearHistoryBtn');
+            const exportBtn = document.getElementById('exportBtn');
+
+            // ─── STATE ───
+            const STORAGE_KEY = 'amazon_inventory_history';
+            let history = [];
+
+            // ─── LOAD HISTORY ───
+            function loadHistory() {
+                try {
+                    const stored = localStorage.getItem(STORAGE_KEY);
+                    if (stored) {
+                        history = JSON.parse(stored);
+                        // ensure it's an array
+                        if (!Array.isArray(history)) history = [];
+                    } else {
+                        // seed with a couple of demo entries
+                        const now = Date.now();
+                        history = [{
+                            asin: 'B08N5WRWNW',
+                            marketplace: 'us',
+                            title: 'Anker Wireless Charger, 313 Pad',
+                            status: 'in-stock',
+                            price: '$19.99',
+                            availability: 'In Stock',
+                            timestamp: now - 3600000 * 2,
+                            level: 85
+                        }, {
+                            asin: 'B07XJ8VJ8K',
+                            marketplace: 'uk',
+                            title: 'Sony WH-1000XM4 Wireless Headphones',
+                            status: 'low-stock',
+                            price: '£249.00',
+                            availability: 'Only 3 left',
+                            timestamp: now - 3600000 * 5,
+                            level: 18
+                        }, {
+                            asin: 'B09G9D7K8M',
+                            marketplace: 'de',
+                            title: 'Logitech MX Master 3S Maus',
+                            status: 'out-of-stock',
+                            price: '€99.99',
+                            availability: 'Out of Stock',
+                            timestamp: now - 3600000 * 12,
+                            level: 0
+                        }];
+                        saveHistory();
+                    }
+                } catch (_) {
+                    history = [];
+                }
+                renderHistory();
+            }
+
+            function saveHistory() {
+                try {
+                    localStorage.setItem(STORAGE_KEY, JSON.stringify(history));
+                } catch (_) { /* ignore */ }
+                renderHistory();
+            }
+
+            function addHistoryEntry(entry) {
+                history.unshift(entry);
+                // keep last 100 entries
+                if (history.length > 100) history.pop();
+                saveHistory();
+            }
+
+            function clearHistory() {
+                if (history.length === 0) return;
+                if (confirm('Clear all stock history?')) {
+                    history = [];
+                    saveHistory();
+                }
+            }
+
+            function exportHistory() {
+                if (history.length === 0) {
+                    alert('No history to export.');
+                    return;
+                }
+                const headers = ['ASIN', 'Marketplace', 'Title', 'Status', 'Price', 'Availability', 'Timestamp'];
+                const rows = history.map(h => [
+                    h.asin,
+                    h.marketplace.toUpperCase(),
+                    `"${h.title.replace(/"/g, '""')}"`,
+                    h.status,
+                    h.price || '—',
+                    h.availability || '—',
+                    new Date(h.timestamp).toLocaleString()
+                ]);
+                const csv = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+                const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(blob);
+                link.download = `amazon-stock-history-${new Date().toISOString().slice(0,10)}.csv`;
+                link.click();
+                URL.revokeObjectURL(link.href);
+            }
+
+            // ─── RENDER HISTORY ───
+            function renderHistory() {
+                if (history.length === 0) {
+                    historyContainer.innerHTML = `
+                        <div class="history-empty">
+                            <i class="fas fa-inbox" aria-hidden="true"></i>
+                            <p>No stock checks yet.<br>Start by checking a product above.</p>
+                        </div>
+                    `;
+                    historyCount.textContent = '(0)';
+                    return;
+                }
+
+                let html = `
+                    <div class="history-table-wrap">
+                        <table class="history-table">
+                            <thead>
+                                <tr>
+                                    <th>ASIN</th>
+                                    <th>Market</th>
+                                    <th>Status</th>
+                                    <th>Price</th>
+                                    <th>Checked</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                `;
+
+                history.forEach(h => {
+                    const statusLabel = h.status.replace('-', ' ').toUpperCase();
+                    const statusClass = h.status;
+                    const mktClass = h.marketplace.toLowerCase();
+                    const timeStr = new Date(h.timestamp).toLocaleString(undefined, {
+                        month: 'short',
+                        day: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                    });
+
+                    html += `
+                        <tr>
+                            <td><code style="font-size:12px;background:var(--gray-100);padding:2px 8px;border-radius:4px;">${h.asin}</code></td>
+                            <td><span class="marketplace-badge ${mktClass}">${h.marketplace.toUpperCase()}</span></td>
+                            <td>
+                                <span class="status-dot ${statusClass}"></span>
+                                ${statusLabel}
+                            </td>
+                            <td>${h.price || '—'}</td>
+                            <td class="time-col">${timeStr}</td>
+                        </tr>
+                    `;
+                });
+
+                html += `
+                            </tbody>
+                        </table>
+                    </div>
+                `;
+
+                historyContainer.innerHTML = html;
+                historyCount.textContent = `(${history.length})`;
+            }
+
+            // ─── EXTRACT ASIN ───
+            function extractAsin(input) {
+                let clean = input.trim();
+                if (!clean) return null;
+
+                // If it looks like a URL, try to extract ASIN
+                if (clean.includes('amazon.') || clean.includes('amzn.')) {
+                    // Pattern: /dp/XXXXX or /gp/product/XXXXX
+                    const dpMatch = clean.match(/\/dp\/([A-Z0-9]{10})/i);
+                    if (dpMatch) return dpMatch[1];
+                    const gpMatch = clean.match(/\/gp\/product\/([A-Z0-9]{10})/i);
+                    if (gpMatch) return gpMatch[1];
+                    const productMatch = clean.match(/\/product\/([A-Z0-9]{10})/i);
+                    if (productMatch) return productMatch[1];
+                    // try to find any 10-char alphanumeric in the URL
+                    const anyAsin = clean.match(/([A-Z0-9]{10})/);
+                    if (anyAsin) return anyAsin[1];
+                    return null;
+                }
+
+                // If it's a 10-char alphanumeric, treat as ASIN
+                if (/^[A-Z0-9]{10}$/.test(clean.toUpperCase())) {
+                    return clean.toUpperCase();
+                }
+
+                return null;
+            }
+
+            // ─── SIMULATED STOCK CHECK ───
+            function simulateStockCheck(asin, marketplace) {
+                // Deterministic pseudo-random based on ASIN + marketplace
+                const hash = (s) => {
+                    let h = 0;
+                    for (let i = 0; i < s.length; i++) {
+                        h = ((h << 5) - h) + s.charCodeAt(i);
+                        h |= 0;
+                    }
+                    return Math.abs(h);
+                };
+
+                const seed = hash(asin + '|' + marketplace);
+                const rand = (min, max) => ((seed * 9301 + 49297) % 233280) / 233280 * (max - min) + min;
+
+                const r = rand(0, 100);
+
+                let status, level, availability, price;
+
+                // Market-specific price simulation
+                const priceMap = {
+                    us: { currency: '$', base: 19.99 },
+                    uk: { currency: '£', base: 16.99 },
+                    ca: { currency: 'CA$', base: 24.99 },
+                    de: { currency: '€', base: 18.99 }
+                };
+                const m = priceMap[marketplace] || priceMap.us;
+                const basePrice = m.base + (seed % 50);
+                price = m.currency + basePrice.toFixed(2);
+
+                // Stock status with realistic distribution
+                if (r < 5) {
+                    // Out of stock
+                    status = 'out-of-stock';
+                    level = 0;
+                    availability = 'Out of Stock';
+                } else if (r < 15) {
+                    // Low stock
+                    status = 'low-stock';
+                    level = Math.floor(rand(5, 28));
+                    availability = `Only ${level} left in stock`;
+                } else if (r < 22) {
+                    // Pre-order
+                    status = 'pre-order';
+                    level = 60;
+                    availability = 'Available for pre-order';
+                } else {
+                    // In stock
+                    status = 'in-stock';
+                    level = Math.floor(rand(55, 100));
+                    availability = level > 80 ? 'In Stock' : `In Stock (${level} units)`;
+                }
+
+                // Slight variation for same ASIN different marketplaces
+                const marketplaceOffset = { us: 0, uk: 7, ca: 14, de: 21 } [marketplace] || 0;
+                const adjustedLevel = Math.min(100, Math.max(0, level + (seed % 9) - 4 + marketplaceOffset % 7));
+
+                // Build product title
+                const titles = [
+                    'Wireless Bluetooth Headphones',
+                    'Smart Fitness Tracker Watch',
+                    'Portable Power Bank 20000mAh',
+                    'USB-C Hub 7-in-1 Adapter',
+                    'Noise Canceling Earbuds',
+                    '4K Action Camera with Stabilizer',
+                    'Foldable Laptop Stand',
+                    'Mechanical RGB Gaming Keyboard',
+                    'Wireless Charging Pad Duo',
+                    'Smart Home Security Camera'
+                ];
+                const titleIdx = hash(asin + 'title') % titles.length;
+                const title = titles[titleIdx] + (marketplace !== 'us' ? ` (${marketplace.toUpperCase()})` : '');
+
+                return {
+                    asin,
+                    marketplace,
+                    title,
+                    status,
+                    level: adjustedLevel,
+                    price,
+                    availability,
+                    timestamp: Date.now()
+                };
+            }
+
+            // ─── UPDATE UI WITH RESULTS ───
+            function displayResults(result) {
+                // Product info
+                productTitle.textContent = result.title;
+                productAsin.textContent = result.asin;
+                productImage.innerHTML = `<i class="fas fa-box"></i>`;
+
+                // Status badge
+                const statusMap = {
+                    'in-stock': { label: 'In Stock', icon: 'fa-circle-check', cls: 'in-stock' },
+                    'low-stock': { label: 'Low Stock', icon: 'fa-triangle-exclamation', cls: 'low-stock' },
+                    'out-of-stock': { label: 'Out of Stock', icon: 'fa-circle-xmark', cls: 'out-of-stock' },
+                    'pre-order': { label: 'Pre-Order', icon: 'fa-clock', cls: 'pre-order' }
+                };
+                const s = statusMap[result.status] || statusMap['in-stock'];
+                statusBadge.className = `status-badge ${s.cls}`;
+                statusBadge.innerHTML = `<i class="fas ${s.icon}"></i><span>${s.label}</span>`;
+                statusText.textContent = s.label;
+
+                // Level bar
+                const level = result.level;
+                stockLevelFill.style.width = level + '%';
+                stockLevelFill.className = 'fill';
+                if (level > 60) stockLevelFill.classList.add('high');
+                else if (level > 25) stockLevelFill.classList.add('medium');
+                else if (level > 0) stockLevelFill.classList.add('low');
+                else stockLevelFill.classList.add('none');
+
+                // Meta
+                productPrice.textContent = result.price;
+                productAvailability.textContent = result.availability;
+                const mktLabel = { us: 'US', uk: 'UK', ca: 'CA', de: 'DE' } [result.marketplace] || 'US';
+                resultMarketplace.textContent = mktLabel;
+
+                const timeStr = new Date(result.timestamp).toLocaleString(undefined, {
+                    month: 'short',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit'
+                });
+                lastChecked.textContent = `Last checked: ${timeStr}`;
+
+                resultsCard.classList.add('show');
+
+                // ─── ALERTS ───
+                if (result.status === 'out-of-stock') {
+                    showAlert('danger', `🚨 Out of Stock! ${result.title} is currently unavailable.`);
+                    // Browser notification
+                    if ('Notification' in window && Notification.permission === 'granted') {
+                        new Notification('Amazon Inventory Alert', {
+                            body: `${result.title} is OUT OF STOCK!`,
+                            icon: 'https://cdn-icons-png.flaticon.com/512/3081/3081559.png'
+                        });
+                    }
+                } else if (result.status === 'low-stock') {
+                    showAlert('warning', `⚠️ Low Stock! ${result.title} has only ${result.level} units left.`);
+                } else {
+                    // Hide alert for in-stock / pre-order
+                    hideAlert();
+                }
+
+                // Add to history
+                addHistoryEntry(result);
+            }
+
+            // ─── ALERT SYSTEM ───
+            function showAlert(type, message) {
+                alertBanner.className = `alert-banner show ${type}`;
+                alertMessage.textContent = message;
+                // Re-apply animation
+                alertBanner.style.animation = 'none';
+                requestAnimationFrame(() => {
+                    alertBanner.style.animation = 'slideDown 0.35s ease';
+                });
+            }
+
+            function hideAlert() {
+                alertBanner.className = 'alert-banner';
+            }
+
+            closeAlertBtn.addEventListener('click', hideAlert);
+
+            // ─── MAIN CHECK ACTION ───
+            function performCheck() {
+                const raw = productInput.value.trim();
+                if (!raw) {
+                    productInput.focus();
+                    productInput.style.borderColor = 'var(--red-500)';
+                    setTimeout(() => { productInput.style.borderColor = ''; }, 1000);
+                    showAlert('danger', 'Please enter an Amazon product URL or ASIN.');
+                    return;
+                }
+
+                const asin = extractAsin(raw);
+                if (!asin) {
+                    showAlert('danger', 'Could not extract a valid ASIN. Please check the URL or enter a 10-character ASIN.');
+                    return;
+                }
+
+                const marketplace = marketplaceSelect.value;
+
+                // Disable button and show loading
+                checkBtn.disabled = true;
+                checkBtn.classList.add('loading');
+
+                // Hide old results
+                resultsCard.classList.remove('show');
+                hideAlert();
+
+                // Simulate network delay
+                const delay = 800 + Math.random() * 1000;
+                setTimeout(() => {
+                    const result = simulateStockCheck(asin, marketplace);
+                    displayResults(result);
+                    checkBtn.disabled = false;
+                    checkBtn.classList.remove('loading');
+                }, delay);
+            }
+
+            // ─── EVENT LISTENERS ───
+            checkBtn.addEventListener('click', performCheck);
+
+            productInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    performCheck();
+                }
+            });
+
+            clearHistoryBtn.addEventListener('click', clearHistory);
+            exportBtn.addEventListener('click', exportHistory);
+
+            // ─── NOTIFICATION PERMISSION ───
+            if ('Notification' in window && Notification.permission === 'default') {
+                Notification.requestPermission();
+            }
+
+            // ─── INIT ───
+            loadHistory();
+
+            // Auto-check if URL param ?asin=XXX
+            const urlParams = new URLSearchParams(window.location.search);
+            const asinParam = urlParams.get('asin');
+            if (asinParam) {
+                productInput.value = asinParam;
+                setTimeout(performCheck, 400);
+            }
+
+            // ─── KEYBOARD SHORTCUT: Ctrl+Enter ───
+            document.addEventListener('keydown', (e) => {
+                if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+                    const active = document.activeElement;
+                    if (active && (active.id === 'productInput' || active.closest('.tool-container'))) {
+                        e.preventDefault();
+                        performCheck();
+                    }
+                }
+            });
+
+        })();
+    </script>
+
+</body>
+</html>
