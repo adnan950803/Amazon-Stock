@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Amazon Keyword Research Tool</title>
+
+<style>
+:root{
+    --blue:#007BFF;
+    --bg:#f4f9ff;
+    --card:#ffffff;
+    --text:#222;
+}
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Arial, sans-serif;
+}
+
+body{
+    background:var(--bg);
+    padding:20px;
+    color:var(--text);
+}
+
+.container{
+    max-width:1100px;
+    margin:auto;
+}
+
+header{
+    text-align:center;
+    margin-bottom:25px;
+}
+
+header h1{
+    color:var(--blue);
+    font-size:2rem;
+}
+
+header p{
+    color:#666;
+}
+
+.card{
+    background:#fff;
+    padding:20px;
+    border-radius:15px;
+    box-shadow:0 5px 15px rgba(0,0,0,0.08);
+    margin-bottom:20px;
+}
+
+.grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:15px;
+}
+
+input{
+    width:100%;
+    padding:12px;
+    border:2px solid #dbeafe;
+    border-radius:10px;
+}
+
+button{
+    width:100%;
+    padding:14px;
+    margin-top:15px;
+    background:var(--blue);
+    color:#fff;
+    border:none;
+    border-radius:10px;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+button:hover{
+    background:#0056d2;
+}
+
+.results{
+    display:none;
+}
+
+.cards{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+    gap:15px;
+}
+
+.keyword-card{
+    background:#f7fbff;
+    border-left:5px solid var(--blue);
+    padding:15px;
+    border-radius:10px;
+}
+
+.keyword-card h3{
+    font-size:14px;
+    color:#555;
+}
+
+.keyword-card p{
+    font-size:18px;
+    font-weight:bold;
+    margin-top:5px;
+}
+
+.badge{
+    display:inline-block;
+    margin-top:8px;
+    padding:5px 10px;
+    border-radius:8px;
+    background:var(--blue);
+    color:white;
+    font-size:12px;
+}
+
+/* Bar */
+.bar{
+    width:100%;
+    height:8px;
+    background:#ddd;
+    border-radius:10px;
+    margin-top:8px;
+    overflow:hidden;
+}
+
+.bar-fill{
+    height:100%;
+    background:var(--blue);
+}
+
+ul{
+    padding-left:20px;
+    margin-top:10px;
+}
+
+li{
+    margin-bottom:6px;
+    color:#333;
+}
+
+@media(max-width:768px){
+    .grid{
+        grid-template-columns:1fr;
+    }
+
+    header h1{
+        font-size:1.5rem;
+    }
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+
+<header>
+<h1>Amazon Keyword Research Tool</h1>
+<p>Find search volume, competition & keyword ideas</p>
+</header>
+
+<div class="card">
+
+<div class="grid">
+<input type="text" id="keyword" placeholder="Enter seed keyword (e.g. yoga mat)">
+<input type="text" id="category" placeholder="Category (optional)">
+</div>
+
+<button onclick="analyzeKeywords()">Research Keywords</button>
+
+</div>
+
+<div class="results" id="results">
+
+<div class="card cards">
+
+<div class="keyword-card">
+<h3>Main Keyword</h3>
+<p id="mainKeyword"></p>
+<span class="badge">Primary</span>
+</div>
+
+<div class="keyword-card">
+<h3>Search Volume</h3>
+<p id="volume"></p>
+</div>
+
+<div class="keyword-card">
+<h3>Competition Score</h3>
+<p id="competitionText"></p>
+<div class="bar">
+<div class="bar-fill" id="competitionBar"></div>
+</div>
+</div>
+
+</div>
+
+<div class="card">
+
+<h3>Long-tail Keywords</h3>
+<ul id="longTail"></ul>
+
+</div>
+
+<div class="card">
+
+<h3>Related Keywords</h3>
+<ul id="related"></ul>
+
+</div>
+
+</div>
+
+</div>
+
+<script>
+
+function random(min,max){
+    return Math.floor(Math.random()*(max-min+1))+min;
+}
+
+function analyzeKeywords(){
+
+const keyword = document.getElementById("keyword").value.trim();
+
+if(!keyword){
+alert("Enter a keyword");
+return;
+}
+
+document.getElementById("results").style.display="block";
+
+/* Fake Metrics */
+let volume = random(500,50000);
+let competition = random(10,90);
+
+/* Output */
+document.getElementById("mainKeyword").innerText = keyword;
+document.getElementById("volume").innerText = volume.toLocaleString() + " searches/month";
+
+document.getElementById("competitionText").innerText =
+competition < 40 ? "Low"
+: competition < 70 ? "Medium"
+: "High";
+
+document.getElementById("competitionBar").style.width = competition + "%";
+
+/* Long Tail Keywords */
+let longTail = [
+keyword + " for beginners",
+"best " + keyword + " 2026",
+keyword + " Amazon guide",
+"cheap " + keyword,
+keyword + " high quality"
+];
+
+/* Related Keywords */
+let related = [
+keyword + " price",
+keyword + " benefits",
+keyword + " review",
+keyword + " vs alternatives",
+"buy " + keyword
+];
+
+/* Render Lists */
+let ltList = document.getElementById("longTail");
+let rList = document.getElementById("related");
+
+ltList.innerHTML = "";
+rList.innerHTML = "";
+
+longTail.forEach(k=>{
+ltList.innerHTML += `<li>${k}</li>`;
+});
+
+related.forEach(k=>{
+rList.innerHTML += `<li>${k}</li>`;
+});
+
+}
+
+</script>
+
+</body>
+</html>
