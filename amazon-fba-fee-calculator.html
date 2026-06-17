@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Amazon FBA Fee Calculator - Calculate Referral Fees, FBA Fees, Net Profit, ROI, and Profit Margin.">
+<title>Amazon FBA Fee Calculator</title>
+
+<style>
+:root{
+    --primary:#007BFF;
+    --primary-dark:#0056d2;
+    --bg:#f4f9ff;
+    --white:#ffffff;
+    --success:#28a745;
+    --danger:#dc3545;
+    --shadow:0 8px 20px rgba(0,0,0,0.08);
+}
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Segoe UI, Arial, sans-serif;
+}
+
+body{
+    background:var(--bg);
+    padding:20px;
+    color:#333;
+}
+
+.container{
+    max-width:1200px;
+    margin:auto;
+}
+
+.header{
+    text-align:center;
+    margin-bottom:30px;
+}
+
+.header h1{
+    color:var(--primary);
+    margin-bottom:10px;
+}
+
+.header p{
+    color:#666;
+}
+
+.calculator-card{
+    background:var(--white);
+    border-radius:20px;
+    padding:25px;
+    box-shadow:var(--shadow);
+}
+
+.form-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+    gap:20px;
+}
+
+.form-group{
+    display:flex;
+    flex-direction:column;
+}
+
+label{
+    margin-bottom:8px;
+    font-weight:600;
+}
+
+input, select{
+    padding:12px;
+    border:2px solid #dce8ff;
+    border-radius:10px;
+    outline:none;
+    transition:0.3s;
+}
+
+input:focus,
+select:focus{
+    border-color:var(--primary);
+}
+
+.buttons{
+    display:flex;
+    gap:15px;
+    margin-top:25px;
+    flex-wrap:wrap;
+}
+
+button{
+    flex:1;
+    min-width:150px;
+    padding:14px;
+    border:none;
+    border-radius:10px;
+    cursor:pointer;
+    font-weight:600;
+    transition:0.3s;
+}
+
+.calculate-btn{
+    background:var(--primary);
+    color:white;
+}
+
+.calculate-btn:hover{
+    background:var(--primary-dark);
+}
+
+.reset-btn{
+    background:#e9ecef;
+}
+
+.reset-btn:hover{
+    background:#d8dde2;
+}
+
+.results{
+    margin-top:30px;
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+    gap:20px;
+}
+
+.result-card{
+    background:white;
+    padding:20px;
+    border-radius:15px;
+    box-shadow:var(--shadow);
+    transition:.3s;
+}
+
+.result-card:hover{
+    transform:translateY(-3px);
+}
+
+.result-card h3{
+    color:var(--primary);
+    font-size:16px;
+    margin-bottom:10px;
+}
+
+.result-value{
+    font-size:22px;
+    font-weight:bold;
+}
+
+.profit{
+    color:var(--success);
+}
+
+.loss{
+    color:var(--danger);
+}
+
+.error{
+    color:var(--danger);
+    margin-top:15px;
+    font-weight:600;
+}
+
+.footer-note{
+    text-align:center;
+    margin-top:25px;
+    color:#777;
+    font-size:14px;
+}
+
+@media(max-width:768px){
+    .calculator-card{
+        padding:18px;
+    }
+
+    .header h1{
+        font-size:1.8rem;
+    }
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+
+    <div class="header">
+        <h1>Amazon FBA Fee Calculator</h1>
+        <p>Calculate Amazon Fees, Net Profit, ROI & Profit Margin</p>
+    </div>
+
+    <div class="calculator-card">
+
+        <div class="form-grid">
+
+            <div class="form-group">
+                <label>Currency</label>
+                <select id="currency">
+                    <option value="$">USD ($)</option>
+                    <option value="£">GBP (£)</option>
+                    <option value="€">EUR (€)</option>
+                    <option value="C$">CAD (C$)</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Product Selling Price</label>
+                <input type="number" id="sellingPrice" min="0" step="0.01">
+            </div>
+
+            <div class="form-group">
+                <label>Product Cost</label>
+                <input type="number" id="productCost" min="0" step="0.01">
+            </div>
+
+            <div class="form-group">
+                <label>Shipping Cost</label>
+                <input type="number" id="shippingCost" min="0" step="0.01">
+            </div>
+
+            <div class="form-group">
+                <label>Referral Fee (%)</label>
+                <input type="number" id="referralPercent" min="0" step="0.01" value="15">
+            </div>
+
+            <div class="form-group">
+                <label>FBA Fulfillment Fee</label>
+                <input type="number" id="fbaFee" min="0" step="0.01" value="3.50">
+            </div>
+
+        </div>
+
+        <div class="buttons">
+            <button class="calculate-btn" onclick="calculate()">Calculate</button>
+            <button class="reset-btn" onclick="resetCalculator()">Reset</button>
+        </div>
+
+        <div id="error" class="error"></div>
+
+        <div class="results">
+
+            <div class="result-card">
+                <h3>Referral Fee</h3>
+                <div id="referralFee" class="result-value">$0.00</div>
+            </div>
+
+            <div class="result-card">
+                <h3>FBA Fulfillment Fee</h3>
+                <div id="fulfillmentFee" class="result-value">$0.00</div>
+            </div>
+
+            <div class="result-card">
+                <h3>Total Amazon Fees</h3>
+                <div id="totalFees" class="result-value">$0.00</div>
+            </div>
+
+            <div class="result-card">
+                <h3>Net Profit</h3>
+                <div id="netProfit" class="result-value">$0.00</div>
+            </div>
+
+            <div class="result-card">
+                <h3>ROI</h3>
+                <div id="roi" class="result-value">0%</div>
+            </div>
+
+            <div class="result-card">
+                <h3>Profit Margin</h3>
+                <div id="margin" class="result-value">0%</div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="footer-note">
+        Amazon FBA Fee Calculator • ©2026 Copyright amazonstock.net | All Rights Reserved.
+    </div>
+
+</div>
+
+<script
+
+const inputs = document.querySelectorAll("input, select");
+
+inputs.forEach(input=>{
+    input.addEventListener("input", calculate);
+});
+
+function calculate(){
+
+    const currency = document.getElementById("currency").value;
+
+    const sellingPrice = parseFloat(document.getElementById("sellingPrice").value) || 0;
+    const productCost = parseFloat(document.getElementById("productCost").value) || 0;
+    const shippingCost = parseFloat(document.getElementById("shippingCost").value) || 0;
+    const referralPercent = parseFloat(document.getElementById("referralPercent").value) || 0;
+    const fbaFee = parseFloat(document.getElementById("fbaFee").value) || 0;
+
+    if(sellingPrice <= 0){
+        document.getElementById("error").textContent =
+        "Please enter a valid selling price.";
+        return;
+    }
+
+    document.getElementById("error").textContent = "";
+
+    const referralFee =
+    sellingPrice * (referralPercent / 100);
+
+    const totalFees =
+    referralFee + fbaFee;
+
+    const netProfit =
+    sellingPrice - productCost - shippingCost - totalFees;
+
+    const roi =
+    productCost > 0
+    ? (netProfit / productCost) * 100
+    : 0;
+
+    const margin =
+    sellingPrice > 0
+    ? (netProfit / sellingPrice) * 100
+    : 0;
+
+    document.getElementById("referralFee").innerHTML =
+    currency + referralFee.toFixed(2);
+
+    document.getElementById("fulfillmentFee").innerHTML =
+    currency + fbaFee.toFixed(2);
+
+    document.getElementById("totalFees").innerHTML =
+    currency + totalFees.toFixed(2);
+
+    const profitEl =
+    document.getElementById("netProfit");
+
+    profitEl.innerHTML =
+    currency + netProfit.toFixed(2);
+
+    profitEl.className =
+    netProfit >= 0
+    ? "result-value profit"
+    : "result-value loss";
+
+    document.getElementById("roi").innerHTML =
+    roi.toFixed(2) + "%";
+
+    document.getElementById("margin").innerHTML =
+    margin.toFixed(2) + "%";
+}
+
+function resetCalculator(){
+
+    document.getElementById("sellingPrice").value = "";
+    document.getElementById("productCost").value = "";
+    document.getElementById("shippingCost").value = "";
+    document.getElementById("referralPercent").value = "15";
+    document.getElementById("fbaFee").value = "3.50";
+
+    calculate();
+}
+
+calculate();
+
+</script>
+
+</body>
+</html>
