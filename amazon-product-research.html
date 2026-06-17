@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Amazon Product Research Tool</title>
+
+<style>
+:root{
+    --blue:#007BFF;
+    --bg:#f4f9ff;
+    --card:#ffffff;
+    --text:#222;
+}
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Arial, sans-serif;
+}
+
+body{
+    background:var(--bg);
+    padding:20px;
+    color:var(--text);
+}
+
+.container{
+    max-width:1200px;
+    margin:auto;
+}
+
+header{
+    text-align:center;
+    margin-bottom:25px;
+}
+
+header h1{
+    color:var(--blue);
+    font-size:2rem;
+}
+
+header p{
+    color:#666;
+}
+
+.card{
+    background:var(--card);
+    padding:20px;
+    border-radius:15px;
+    box-shadow:0 5px 15px rgba(0,0,0,0.08);
+    margin-bottom:20px;
+    transition:0.3s;
+}
+
+.card:hover{
+    transform:translateY(-3px);
+}
+
+.grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+    gap:15px;
+}
+
+input, select{
+    width:100%;
+    padding:12px;
+    border:2px solid #dbeafe;
+    border-radius:10px;
+}
+
+button{
+    width:100%;
+    padding:14px;
+    border:none;
+    background:var(--blue);
+    color:white;
+    border-radius:10px;
+    cursor:pointer;
+    font-weight:bold;
+}
+
+button:hover{
+    background:#0056d2;
+}
+
+/* Metrics Cards */
+.metrics{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+    gap:15px;
+}
+
+.metric{
+    background:#f7fbff;
+    padding:15px;
+    border-left:5px solid var(--blue);
+    border-radius:10px;
+}
+
+.metric h3{
+    font-size:14px;
+    color:#555;
+}
+
+.metric p{
+    font-size:20px;
+    font-weight:bold;
+    margin-top:5px;
+}
+
+/* Competition Bar */
+.bar{
+    height:10px;
+    background:#ddd;
+    border-radius:10px;
+    overflow:hidden;
+    margin-top:8px;
+}
+
+.bar-fill{
+    height:100%;
+    background:var(--blue);
+}
+
+/* Trend Chart */
+canvas{
+    width:100%;
+    background:#fff;
+    border-radius:10px;
+    border:1px solid #ddd;
+    margin-top:10px;
+}
+
+.opportunity{
+    font-size:22px;
+    font-weight:bold;
+    color:var(--blue);
+}
+
+@media(max-width:768px){
+    header h1{
+        font-size:1.5rem;
+    }
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+
+<header>
+<h1>Amazon Product Research Tool</h1>
+<p>Analyze sales, revenue, competition & trends</p>
+</header>
+
+<!-- INPUT SECTION -->
+<div class="card">
+<div class="grid">
+
+<input id="productName" placeholder="Product Name">
+<input id="asin" placeholder="ASIN">
+<input id="category" placeholder="Category">
+
+<select id="marketplace">
+<option>US</option>
+<option>UK</option>
+<option>CA</option>
+<option>DE</option>
+</select>
+
+</div>
+
+<br>
+<button onclick="analyzeProduct()">Analyze Product</button>
+</div>
+
+<!-- RESULTS -->
+<div id="results" style="display:none;">
+
+<div class="card metrics">
+
+<div class="metric">
+<h3>Estimated Monthly Sales</h3>
+<p id="sales"></p>
+</div>
+
+<div class="metric">
+<h3>Monthly Revenue</h3>
+<p id="revenue"></p>
+</div>
+
+<div class="metric">
+<h3>Annual Revenue</h3>
+<p id="annual"></p>
+</div>
+
+<div class="metric">
+<h3>Competition Score</h3>
+<p id="competitionText"></p>
+<div class="bar">
+<div class="bar-fill" id="competitionBar"></div>
+</div>
+</div>
+
+<div class="metric">
+<h3>BSR</h3>
+<p id="bsr"></p>
+</div>
+
+<div class="metric">
+<h3>Reviews</h3>
+<p id="reviews"></p>
+</div>
+
+<div class="metric">
+<h3>Rating</h3>
+<p id="rating"></p>
+</div>
+
+<div class="metric">
+<h3>Opportunity Score</h3>
+<p class="opportunity" id="opportunity"></p>
+</div>
+
+</div>
+
+<div class="card">
+<h3>Trend Analysis</h3>
+<canvas id="trendChart" height="120"></canvas>
+</div>
+
+</div>
+
+</div>
+
+<script>
+
+function random(min,max){
+    return Math.floor(Math.random()*(max-min+1))+min;
+}
+
+function analyzeProduct(){
+
+document.getElementById("results").style.display="block";
+
+/* Fake Data Simulation */
+let sales = random(200,5000);
+let price = random(10,80);
+let revenue = sales * price;
+let annual = revenue * 12;
+
+let competition = random(10,90);
+let bsr = random(1000,50000);
+let reviews = random(10,5000);
+let rating = (Math.random()*2+3).toFixed(1);
+
+/* Opportunity Score */
+let opportunity = Math.max(0, 100 - competition + (sales/100));
+
+/* UI Update */
+document.getElementById("sales").innerText = sales + " units";
+document.getElementById("revenue").innerText = "$" + revenue.toLocaleString();
+document.getElementById("annual").innerText = "$" + annual.toLocaleString();
+
+document.getElementById("competitionText").innerText =
+competition < 40 ? "Low" : competition < 70 ? "Medium" : "High";
+
+document.getElementById("competitionBar").style.width = competition + "%";
+
+document.getElementById("bsr").innerText = bsr;
+document.getElementById("reviews").innerText = reviews;
+document.getElementById("rating").innerText = rating + " ⭐";
+
+document.getElementById("opportunity").innerText =
+Math.min(100, opportunity.toFixed(0)) + "/100";
+
+/* Trend Chart */
+drawChart();
+}
+
+function drawChart(){
+
+let canvas = document.getElementById("trendChart");
+let ctx = canvas.getContext("2d");
+
+ctx.clearRect(0,0,canvas.width,canvas.height);
+
+let data = [20,40,30,60,80,70,90];
+
+ctx.beginPath();
+ctx.moveTo(20,100);
+
+data.forEach((val,i)=>{
+ctx.lineTo(20 + i*60, 120 - val);
+});
+
+ctx.strokeStyle="#007BFF";
+ctx.lineWidth=3;
+ctx.stroke();
+}
+
+</script>
+
+</body>
+</html>
