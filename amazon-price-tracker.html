@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Amazon Price Tracker</title>
+
+<style>
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Arial,sans-serif;
+}
+
+body{
+background:#f4f9ff;
+padding:20px;
+}
+
+.container{
+max-width:1100px;
+margin:auto;
+}
+
+.header{
+text-align:center;
+margin-bottom:30px;
+}
+
+.header h1{
+color:#007bff;
+font-size:2rem;
+}
+
+.tool-box{
+background:#fff;
+padding:25px;
+border-radius:15px;
+box-shadow:0 4px 15px rgba(0,0,0,.1);
+}
+
+.input-group{
+display:flex;
+gap:10px;
+flex-wrap:wrap;
+}
+
+input{
+flex:1;
+padding:14px;
+border:2px solid #dbeafe;
+border-radius:8px;
+}
+
+button{
+padding:14px 25px;
+border:none;
+background:#007bff;
+color:white;
+border-radius:8px;
+cursor:pointer;
+font-weight:bold;
+}
+
+button:hover{
+background:#0056d2;
+}
+
+.result{
+display:none;
+margin-top:25px;
+}
+
+.card{
+background:#f7fbff;
+padding:15px;
+border-left:4px solid #007bff;
+border-radius:10px;
+margin-bottom:15px;
+}
+
+.card h3{
+color:#007bff;
+margin-bottom:8px;
+}
+
+canvas{
+width:100%;
+background:#fff;
+border-radius:10px;
+border:1px solid #ddd;
+margin-top:20px;
+}
+
+.comparison-table{
+width:100%;
+border-collapse:collapse;
+margin-top:15px;
+}
+
+.comparison-table th,
+.comparison-table td{
+border:1px solid #ddd;
+padding:10px;
+text-align:center;
+}
+
+.comparison-table th{
+background:#007bff;
+color:white;
+}
+
+.alert{
+padding:12px;
+margin-top:15px;
+border-radius:8px;
+font-weight:bold;
+}
+
+.success{
+background:#d4edda;
+color:#155724;
+}
+
+.warning{
+background:#fff3cd;
+color:#856404;
+}
+
+@media(max-width:768px){
+
+.input-group{
+flex-direction:column;
+}
+
+button{
+width:100%;
+}
+
+.header h1{
+font-size:1.5rem;
+}
+
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+
+<div class="header">
+<h1>Amazon Price Tracker</h1>
+<p>Track prices, alerts, and competitor comparisons.</p>
+</div>
+
+<div class="tool-box">
+
+<div class="input-group">
+<input type="text" id="asin" placeholder="Enter ASIN or Product URL">
+<button onclick="trackPrice()">Track Price</button>
+</div>
+
+<div class="result" id="result">
+
+<div class="card">
+<h3>Current Price</h3>
+<p id="currentPrice">$0.00</p>
+</div>
+
+<div class="card">
+<h3>Lowest Recorded Price</h3>
+<p id="lowestPrice">$0.00</p>
+</div>
+
+<div id="alertBox"></div>
+
+<h3 style="margin-top:20px;color:#007bff;">
+Price History
+</h3>
+
+<canvas id="priceChart" width="800" height="300"></canvas>
+
+<h3 style="margin-top:20px;color:#007bff;">
+Competitor Comparison
+</h3>
+
+<table class="comparison-table">
+<thead>
+<tr>
+<th>Store</th>
+<th>Price</th>
+</tr>
+</thead>
+<tbody id="comparisonBody"></tbody>
+</table>
+
+</div>
+
+</div>
+
+</div>
+
+<script>
+
+function trackPrice(){
+
+const currentPrice =
+(Math.random()*100+20).toFixed(2);
+
+const lowestPrice =
+(Math.random()*20+10).toFixed(2);
+
+document.getElementById("currentPrice")
+.innerText = "$"+currentPrice;
+
+document.getElementById("lowestPrice")
+.innerText = "$"+lowestPrice;
+
+const alertBox =
+document.getElementById("alertBox");
+
+if(currentPrice <= lowestPrice*1.2){
+
+alertBox.innerHTML =
+'<div class="alert success">🔥 Price Drop Detected!</div>';
+
+}else{
+
+alertBox.innerHTML =
+'<div class="alert warning">📢 Tracking Price Changes...</div>';
+
+}
+
+drawChart();
+
+generateComparison();
+
+document.getElementById("result")
+.style.display="block";
+
+}
+
+function drawChart(){
+
+const canvas =
+document.getElementById("priceChart");
+
+const ctx = canvas.getContext("2d");
+
+ctx.clearRect(0,0,canvas.width,canvas.height);
+
+const prices = [80,75,70,68,65,60,58];
+
+ctx.beginPath();
+
+ctx.moveTo(50,250);
+
+prices.forEach((price,index)=>{
+
+const x = 50 + (index*100);
+const y = 300 - (price*3);
+
+ctx.lineTo(x,y);
+
+});
+
+ctx.strokeStyle="#007bff";
+ctx.lineWidth=3;
+ctx.stroke();
+
+}
+
+function generateComparison(){
+
+const data = [
+["Amazon","$59.99"],
+["Walmart","$62.99"],
+["eBay","$61.49"],
+["Target","$64.99"]
+];
+
+const body =
+document.getElementById("comparisonBody");
+
+body.innerHTML="";
+
+data.forEach(item=>{
+
+body.innerHTML += `
+<tr>
+<td>${item[0]}</td>
+<td>${item[1]}</td>
+</tr>
+`;
+
+});
+
+}
+
+</script>
+
+</body>
+</html>
