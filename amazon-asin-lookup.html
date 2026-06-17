@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Amazon ASIN Lookup Tool</title>
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Segoe UI',sans-serif;
+}
+
+body{
+    background:#f5faff;
+    padding:20px;
+}
+
+.container{
+    max-width:1000px;
+    margin:auto;
+}
+
+.header{
+    text-align:center;
+    margin-bottom:30px;
+}
+
+.header h1{
+    color:#007BFF;
+    font-size:2rem;
+}
+
+.header p{
+    color:#666;
+    margin-top:10px;
+}
+
+.lookup-box{
+    background:#fff;
+    padding:25px;
+    border-radius:15px;
+    box-shadow:0 4px 15px rgba(0,0,0,.08);
+}
+
+.input-group{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+}
+
+input{
+    flex:1;
+    min-width:250px;
+    padding:14px;
+    border:2px solid #dbeafe;
+    border-radius:10px;
+    outline:none;
+}
+
+button{
+    padding:14px 25px;
+    border:none;
+    background:#007BFF;
+    color:#fff;
+    border-radius:10px;
+    cursor:pointer;
+    font-weight:bold;
+}
+
+button:hover{
+    background:#005fd1;
+}
+
+.result{
+    display:none;
+    margin-top:25px;
+}
+
+.product-card{
+    background:#fff;
+    border-radius:15px;
+    padding:20px;
+    box-shadow:0 4px 15px rgba(0,0,0,.08);
+}
+
+.product-image{
+    text-align:center;
+    margin-bottom:20px;
+}
+
+.product-image img{
+    width:180px;
+    max-width:100%;
+}
+
+.info-grid{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:15px;
+}
+
+.info-box{
+    background:#f7fbff;
+    border-left:4px solid #007BFF;
+    padding:15px;
+    border-radius:10px;
+}
+
+.info-box h4{
+    color:#007BFF;
+    margin-bottom:5px;
+}
+
+.rating{
+    color:#ff9800;
+    font-weight:bold;
+}
+
+@media(max-width:768px){
+
+    .info-grid{
+        grid-template-columns:1fr;
+    }
+
+    .header h1{
+        font-size:1.6rem;
+    }
+
+    button{
+        width:100%;
+    }
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+
+    <div class="header">
+        <h1>Amazon ASIN Lookup Tool</h1>
+        <p>Find Product Title, Category, Brand, Price, Ratings & Seller Information</p>
+    </div>
+
+    <div class="lookup-box">
+
+        <div class="input-group">
+            <input type="text" id="asinInput" placeholder="Enter Amazon ASIN">
+            <button onclick="lookupASIN()">Lookup ASIN</button>
+        </div>
+
+        <div class="result" id="result">
+
+            <div class="product-card">
+
+                <div class="product-image">
+                    <img src="https://via.placeholder.com/180" id="productImage">
+                </div>
+
+                <div class="info-grid">
+
+                    <div class="info-box">
+                        <h4>Product Title</h4>
+                        <p id="title"></p>
+                    </div>
+
+                    <div class="info-box">
+                        <h4>Category</h4>
+                        <p id="category"></p>
+                    </div>
+
+                    <div class="info-box">
+                        <h4>Brand</h4>
+                        <p id="brand"></p>
+                    </div>
+
+                    <div class="info-box">
+                        <h4>Price</h4>
+                        <p id="price"></p>
+                    </div>
+
+                    <div class="info-box">
+                        <h4>Ratings</h4>
+                        <p id="ratings" class="rating"></p>
+                    </div>
+
+                    <div class="info-box">
+                        <h4>Seller Information</h4>
+                        <p id="seller"></p>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+
+function lookupASIN(){
+
+    const asin = document.getElementById("asinInput").value.trim();
+
+    if(!asin){
+        alert("Please enter an ASIN");
+        return;
+    }
+
+    // Demo Data
+    const demoProduct = {
+        image:"https://via.placeholder.com/180",
+        title:"Apple AirPods Pro (2nd Generation)",
+        category:"Electronics",
+        brand:"Apple",
+        price:"$249.99",
+        ratings:"⭐ 4.8 / 5",
+        seller:"Amazon.com Services LLC"
+    };
+
+    document.getElementById("productImage").src = demoProduct.image;
+    document.getElementById("title").textContent = demoProduct.title;
+    document.getElementById("category").textContent = demoProduct.category;
+    document.getElementById("brand").textContent = demoProduct.brand;
+    document.getElementById("price").textContent = demoProduct.price;
+    document.getElementById("ratings").textContent = demoProduct.ratings;
+    document.getElementById("seller").textContent = demoProduct.seller;
+
+    document.getElementById("result").style.display = "block";
+}
+
+</script>
+
+</body>
+</html>
