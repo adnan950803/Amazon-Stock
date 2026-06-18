@@ -1,347 +1,196 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Amazon Buy Box Tracker Tool</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Amazon Buy Box Tracker</title>
 
 <style>
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-    font-family:Arial, sans-serif;
-}
-
-body{
-    background:#f5faff;
-    padding:20px;
-}
-
-.container{
-    max-width:1000px;
-    margin:auto;
-}
-
-.tool-card{
-    background:#fff;
-    border-radius:15px;
-    padding:25px;
-    box-shadow:0 5px 20px rgba(0,0,0,0.1);
-}
-
-h1{
-    text-align:center;
-    color:#007bff;
-    margin-bottom:20px;
-}
-
-.description{
-    text-align:center;
-    color:#555;
-    margin-bottom:25px;
-}
-
-.input-group{
-    display:flex;
-    gap:10px;
-    flex-wrap:wrap;
-    margin-bottom:20px;
-}
-
-input{
-    flex:1;
-    min-width:220px;
-    padding:12px;
-    border:2px solid #dbeafe;
-    border-radius:8px;
-    outline:none;
-}
-
-button{
-    background:#007bff;
-    color:white;
-    border:none;
-    padding:12px 18px;
-    border-radius:8px;
-    cursor:pointer;
-    font-weight:bold;
-    transition:0.3s;
-}
-
-button:hover{
-    background:#005fd1;
-}
-
-.dashboard{
-    display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
-    gap:15px;
-    margin-top:20px;
-}
-
-.card{
-    background:#eef6ff;
-    border-radius:12px;
-    padding:18px;
-}
-
-.card h3{
-    color:#007bff;
-    margin-bottom:10px;
-}
-
-.status{
-    font-size:18px;
-    font-weight:bold;
-}
-
-.history-table{
-    width:100%;
-    border-collapse:collapse;
-    margin-top:15px;
-}
-
-.history-table th,
-.history-table td{
-    border:1px solid #dbeafe;
-    padding:10px;
-    text-align:center;
-}
-
-.history-table th{
-    background:#007bff;
-    color:white;
-}
-
-.notification{
-    margin-top:15px;
-    padding:12px;
-    border-radius:8px;
-    display:none;
-}
-
-.success{
-    background:#d1fae5;
-    color:#065f46;
-}
-
-.alert{
-    background:#fee2e2;
-    color:#991b1b;
-}
-
-@media(max-width:768px){
-    .tool-card{
-        padding:15px;
+    body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+        background: #f4f9ff;
+        color: #0a2a43;
     }
 
-    h1{
-        font-size:24px;
+    header {
+        background: #1e88e5;
+        color: white;
+        padding: 20px;
+        text-align: center;
+        font-size: 22px;
+        font-weight: bold;
     }
 
-    .history-table{
-        display:block;
-        overflow-x:auto;
+    .container {
+        max-width: 1000px;
+        margin: auto;
+        padding: 15px;
     }
-}
+
+    .card {
+        background: white;
+        padding: 15px;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        margin-bottom: 15px;
+    }
+
+    .row {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    input {
+        flex: 1;
+        padding: 10px;
+        border-radius: 8px;
+        border: 1px solid #ccc;
+        outline: none;
+    }
+
+    button {
+        padding: 10px 15px;
+        background: #1e88e5;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: 0.3s;
+    }
+
+    button:hover {
+        background: #1565c0;
+    }
+
+    .status {
+        font-size: 18px;
+        font-weight: bold;
+        margin-top: 10px;
+    }
+
+    .history {
+        max-height: 250px;
+        overflow-y: auto;
+    }
+
+    .history-item {
+        padding: 8px;
+        border-bottom: 1px solid #eee;
+        font-size: 14px;
+    }
+
+    .seller-tag {
+        display: inline-block;
+        padding: 3px 8px;
+        background: #e3f2fd;
+        border-radius: 6px;
+        font-size: 12px;
+        margin-left: 5px;
+    }
+
+    @media (max-width: 600px) {
+        .row {
+            flex-direction: column;
+        }
+    }
 </style>
 </head>
+
 <body>
+
+<header>
+    Amazon Buy Box Tracker Tool
+</header>
 
 <div class="container">
 
-<div class="tool-card">
+    <div class="card">
+        <div class="row">
+            <input type="text" id="product" placeholder="Enter Product Name or ASIN">
+            <button onclick="trackBuyBox()">Track Buy Box</button>
+        </div>
 
-<h1>Amazon Buy Box Tracker</h1>
+        <div class="status" id="status">Status: Waiting for input...</div>
+    </div>
 
-<p class="description">
-Monitor Buy Box ownership, seller changes, and historical activity.
-</p>
+    <div class="card">
+        <h3>Current Buy Box Seller</h3>
+        <div id="currentSeller">No data yet</div>
+    </div>
 
-<div class="input-group">
-    <input type="text" id="asin" placeholder="Enter Amazon ASIN">
-    <button onclick="trackBuyBox()">Track Buy Box</button>
-</div>
-
-<div id="notification" class="notification"></div>
-
-<div class="dashboard">
-
-<div class="card">
-    <h3>Current Buy Box Seller</h3>
-    <div class="status" id="sellerName">-</div>
-</div>
-
-<div class="card">
-    <h3>Marketplace</h3>
-    <div class="status" id="marketplace">Amazon US</div>
-</div>
-
-<div class="card">
-    <h3>Last Updated</h3>
-    <div class="status" id="lastUpdated">-</div>
-</div>
-
-</div>
-
-<div class="card" style="margin-top:20px;">
-    <h3>Seller Monitoring</h3>
-    <p id="monitoringInfo">No seller monitored yet.</p>
-</div>
-
-<div class="card" style="margin-top:20px;">
-    <h3>Buy Box History</h3>
-
-    <table class="history-table">
-        <thead>
-            <tr>
-                <th>Date</th>
-                <th>Seller</th>
-                <th>Status</th>
-            </tr>
-        </thead>
-        <tbody id="historyBody">
-        </tbody>
-    </table>
-</div>
-
-</div>
+    <div class="card">
+        <h3>Buy Box History</h3>
+        <div class="history" id="history"></div>
+    </div>
 
 </div>
 
 <script>
-
-let currentSeller = "";
-let sellerPool = [
-    "BestDeals Store",
-    "Prime Seller Hub",
-    "Tech Market",
-    "Global Retailer",
-    "Amazon Direct"
+let sellers = [
+    "Amazon", "SellerA", "SellerB", "PrimeDeals", "BestRetailer"
 ];
 
-function trackBuyBox(){
+let lastSeller = "";
 
-    const asin = document.getElementById("asin").value.trim();
+function randomSeller() {
+    return sellers[Math.floor(Math.random() * sellers.length)];
+}
 
-    if(!asin){
-        alert("Please enter an ASIN");
+function trackBuyBox() {
+    const product = document.getElementById("product").value;
+
+    if (!product) {
+        alert("Please enter a product name or ASIN");
         return;
     }
 
-    const randomSeller =
-        sellerPool[Math.floor(Math.random() * sellerPool.length)];
+    document.getElementById("status").innerText = "Tracking Buy Box for: " + product;
 
-    const now = new Date();
+    updateBuyBox(product);
 
-    document.getElementById("sellerName").textContent = randomSeller;
-    document.getElementById("lastUpdated").textContent =
-        now.toLocaleString();
-
-    document.getElementById("monitoringInfo").textContent =
-        "Monitoring seller: " + randomSeller;
-
-    addHistory(randomSeller);
-
-    if(currentSeller && currentSeller !== randomSeller){
-        showNotification(
-            "⚠ Buy Box changed from '" +
-            currentSeller +
-            "' to '" +
-            randomSeller +
-            "'",
-            "alert"
-        );
-
-        if("Notification" in window){
-
-            Notification.requestPermission().then(permission => {
-
-                if(permission === "granted"){
-                    new Notification("Amazon Buy Box Change Detected",{
-                        body:
-                        "New Buy Box Seller: " + randomSeller
-                    });
-                }
-
-            });
-        }
-
-    }else{
-        showNotification(
-            "✓ Buy Box tracking started successfully.",
-            "success"
-        );
-    }
-
-    currentSeller = randomSeller;
+    // simulate update every 5 seconds
+    clearInterval(window.tracker);
+    window.tracker = setInterval(() => updateBuyBox(product), 5000);
 }
 
-function addHistory(seller){
+function updateBuyBox(product) {
+    const newSeller = randomSeller();
 
-    const table = document.getElementById("historyBody");
+    const time = new Date().toLocaleTimeString();
 
-    const row = document.createElement("tr");
+    document.getElementById("currentSeller").innerHTML =
+        `${newSeller} <span class="seller-tag">Live</span>`;
 
-    row.innerHTML = `
-        <td>${new Date().toLocaleDateString()}</td>
-        <td>${seller}</td>
-        <td>Won Buy Box</td>
+    let history = document.getElementById("history");
+
+    let item = document.createElement("div");
+    item.className = "history-item";
+
+    item.innerHTML = `
+        ${time} - Buy Box: <b>${newSeller}</b> (Product: ${product})
     `;
 
-    table.prepend(row);
-}
+    history.prepend(item);
 
-function showNotification(message,type){
-
-    const notification =
-        document.getElementById("notification");
-
-    notification.style.display = "block";
-    notification.className =
-        "notification " + type;
-
-    notification.innerHTML = message;
-}
-
-/* Auto Monitoring Simulation */
-setInterval(() => {
-
-    if(currentSeller){
-
-        const randomChance =
-            Math.random();
-
-        if(randomChance > 0.7){
-
-            const newSeller =
-                sellerPool[
-                Math.floor(
-                Math.random()*sellerPool.length
-                )
-            ];
-
-            if(newSeller !== currentSeller){
-
-                document.getElementById("sellerName")
-                .textContent = newSeller;
-
-                addHistory(newSeller);
-
-                showNotification(
-                    "⚠ Buy Box Seller Changed to: "
-                    + newSeller,
-                    "alert"
-                );
-
-                currentSeller = newSeller;
-            }
-        }
+    // notification if changed
+    if (lastSeller && lastSeller !== newSeller) {
+        sendNotification(lastSeller, newSeller);
     }
 
-},15000);
+    lastSeller = newSeller;
+}
 
+function sendNotification(oldSeller, newSeller) {
+    if (Notification.permission === "granted") {
+        new Notification("Buy Box Changed!", {
+            body: `From ${oldSeller} → ${newSeller}`
+        });
+    } else {
+        Notification.requestPermission();
+    }
+}
 </script>
 
 </body>
