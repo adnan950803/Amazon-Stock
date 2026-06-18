@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Amazon Seller Tools Dashboard</title>
+
+<style>
+    body{
+        margin:0;
+        font-family:Arial, sans-serif;
+        background:#f4f9ff;
+        color:#0a2a43;
+    }
+
+    header{
+        background:#1e88e5;
+        color:white;
+        padding:18px;
+        text-align:center;
+        font-size:22px;
+        font-weight:bold;
+    }
+
+    .container{
+        max-width:1200px;
+        margin:auto;
+        padding:15px;
+    }
+
+    .tabs{
+        display:flex;
+        flex-wrap:wrap;
+        gap:8px;
+        margin-bottom:15px;
+    }
+
+    .tab{
+        flex:1;
+        padding:10px;
+        background:white;
+        border:1px solid #d0e6ff;
+        border-radius:8px;
+        cursor:pointer;
+        text-align:center;
+        transition:0.3s;
+        font-size:14px;
+    }
+
+    .tab:hover{
+        background:#e3f2fd;
+    }
+
+    .tab.active{
+        background:#1e88e5;
+        color:white;
+    }
+
+    .card{
+        background:white;
+        padding:15px;
+        border-radius:12px;
+        box-shadow:0 4px 12px rgba(0,0,0,0.08);
+        margin-bottom:15px;
+    }
+
+    input, textarea{
+        width:100%;
+        padding:10px;
+        margin-top:5px;
+        border-radius:8px;
+        border:1px solid #ccc;
+        font-size:14px;
+    }
+
+    button{
+        width:100%;
+        padding:12px;
+        background:#1e88e5;
+        color:white;
+        border:none;
+        border-radius:8px;
+        cursor:pointer;
+        margin-top:10px;
+    }
+
+    button:hover{
+        background:#1565c0;
+    }
+
+    .grid{
+        display:grid;
+        grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+        gap:10px;
+    }
+
+    .box{
+        background:#e3f2fd;
+        padding:10px;
+        border-radius:10px;
+        text-align:center;
+    }
+
+    .hidden{display:none;}
+
+    @media(max-width:600px){
+        .tabs{flex-direction:column;}
+    }
+</style>
+</head>
+
+<body>
+
+<header>Amazon Seller Tools Dashboard</header>
+
+<div class="container">
+
+    <div class="tabs">
+        <div class="tab active" onclick="showTab('asin')">ASIN Lookup</div>
+        <div class="tab" onclick="showTab('fba')">FBA Calculator</div>
+        <div class="tab" onclick="showTab('profit')">Profit</div>
+        <div class="tab" onclick="showTab('keyword')">Keyword</div>
+        <div class="tab" onclick="showTab('sales')">Sales</div>
+        <div class="tab" onclick="showTab('inventory')">Inventory</div>
+        <div class="tab" onclick="showTab('buybox')">Buy Box</div>
+        <div class="tab" onclick="showTab('research')">Research</div>
+    </div>
+
+    <!-- ASIN -->
+    <div id="asin" class="card">
+        <h3>ASIN Lookup</h3>
+        <input id="asinInput" placeholder="Enter ASIN">
+        <button onclick="lookupASIN()">Search</button>
+        <div id="asinResult"></div>
+    </div>
+
+    <!-- FBA -->
+    <div id="fba" class="card hidden">
+        <h3>FBA Calculator</h3>
+        <input id="fbaCost" placeholder="Product Cost">
+        <input id="fbaFee" placeholder="FBA Fee %">
+        <button onclick="calcFBA()">Calculate</button>
+        <div id="fbaResult"></div>
+    </div>
+
+    <!-- Profit -->
+    <div id="profit" class="card hidden">
+        <h3>Profit Calculator</h3>
+        <input id="pCost" placeholder="Cost">
+        <input id="pPrice" placeholder="Selling Price">
+        <input id="pShip" placeholder="Shipping Cost">
+        <button onclick="calcProfit()">Calculate</button>
+        <div id="profitResult"></div>
+    </div>
+
+    <!-- Keyword -->
+    <div id="keyword" class="card hidden">
+        <h3>Keyword Research</h3>
+        <input id="kw" placeholder="Enter keyword">
+        <button onclick="keywordResearch()">Analyze</button>
+        <div id="kwResult"></div>
+    </div>
+
+    <!-- Sales -->
+    <div id="sales" class="card hidden">
+        <h3>Sales Estimator</h3>
+        <input id="salesRank" placeholder="Best Seller Rank">
+        <button onclick="estimateSales()">Estimate</button>
+        <div id="salesResult"></div>
+    </div>
+
+    <!-- Inventory -->
+    <div id="inventory" class="card hidden">
+        <h3>Inventory Checker</h3>
+        <input id="stock" placeholder="Stock Units">
+        <button onclick="checkStock()">Check</button>
+        <div id="stockResult"></div>
+    </div>
+
+    <!-- Buy Box -->
+    <div id="buybox" class="card hidden">
+        <h3>Buy Box Tracker</h3>
+        <button onclick="trackBuyBox()">Start Tracking</button>
+        <div id="buyboxResult"></div>
+    </div>
+
+    <!-- Research -->
+    <div id="research" class="card hidden">
+        <h3>Product Research Tool</h3>
+        <input id="product" placeholder="Product name">
+        <button onclick="research()">Analyze</button>
+        <div id="researchResult"></div>
+    </div>
+
+</div>
+
+<script>
+function showTab(id){
+    document.querySelectorAll('.card').forEach(c=>c.classList.add('hidden'));
+    document.getElementById(id).classList.remove('hidden');
+
+    document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+    event.target.classList.add('active');
+}
+
+/* ASIN */
+function lookupASIN(){
+    let asin = document.getElementById('asinInput').value;
+    document.getElementById('asinResult').innerHTML =
+    asin ? `ASIN <b>${asin}</b> found (mock data)` : "Enter ASIN";
+}
+
+/* FBA */
+function calcFBA(){
+    let cost = +document.getElementById('fbaCost').value || 0;
+    let fee = +document.getElementById('fbaFee').value || 0;
+    let result = cost + (cost*fee/100);
+    document.getElementById('fbaResult').innerHTML =
+    `Total FBA Cost: <b>$${result.toFixed(2)}</b>`;
+}
+
+/* Profit */
+function calcProfit(){
+    let c = +document.getElementById('pCost').value || 0;
+    let p = +document.getElementById('pPrice').value || 0;
+    let s = +document.getElementById('pShip').value || 0;
+    let profit = p - (c+s);
+    document.getElementById('profitResult').innerHTML =
+    `Profit: <b>$${profit.toFixed(2)}</b>`;
+}
+
+/* Keyword */
+function keywordResearch(){
+    let k = document.getElementById('kw').value;
+    document.getElementById('kwResult').innerHTML =
+    k ? `${k}: High demand (simulated)` : "Enter keyword";
+}
+
+/* Sales */
+function estimateSales(){
+    let r = +document.getElementById('salesRank').value || 0;
+    let est = Math.max(1000 - r, 0);
+    document.getElementById('salesResult').innerHTML =
+    `Estimated Monthly Sales: <b>${est}</b>`;
+}
+
+/* Inventory */
+function checkStock(){
+    let s = +document.getElementById('stock').value || 0;
+    let status = s > 20 ? "In Stock" : "Low Stock";
+    document.getElementById('stockResult').innerHTML =
+    `<b>${status}</b>`;
+}
+
+/* Buy Box */
+function trackBuyBox(){
+    let sellers = ["Amazon","Seller A","Seller B","FBA Pro"];
+    let seller = sellers[Math.floor(Math.random()*sellers.length)];
+    document.getElementById('buyboxResult').innerHTML =
+    `Current Buy Box: <b>${seller}</b>`;
+    setInterval(()=>{
+        let s = sellers[Math.floor(Math.random()*sellers.length)];
+        document.getElementById('buyboxResult').innerHTML =
+        `Buy Box Changed: <b>${s}</b>`;
+    },4000);
+}
+
+/* Research */
+function research(){
+    let p = document.getElementById('product').value;
+    document.getElementById('researchResult').innerHTML =
+    p ? `${p} has medium competition (mock)` : "Enter product";
+}
+</script>
+
+</body>
+</html>
