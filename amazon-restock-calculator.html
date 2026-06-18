@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Amazon Restock Calculator</title>
+
+<!-- Chart.js CDN -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+:root{
+  --primary:#1e88e5;
+  --secondary:#0d47a1;
+  --bg:#f4f8ff;
+  --card:#ffffff;
+  --text:#1c1c1c;
+  --muted:#666;
+  --good:#2ecc71;
+  --warn:#f39c12;
+  --bad:#e74c3c;
+}
+
+[data-theme="dark"]{
+  --bg:#0f172a;
+  --card:#1e293b;
+  --text:#f1f5f9;
+  --muted:#cbd5e1;
+}
+
+*{
+  box-sizing:border-box;
+  font-family:Arial, sans-serif;
+}
+
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--text);
+  transition:0.3s;
+}
+
+header{
+  background:linear-gradient(90deg,var(--primary),var(--secondary));
+  color:white;
+  padding:20px;
+  text-align:center;
+  font-size:22px;
+  font-weight:bold;
+}
+
+.container{
+  max-width:1200px;
+  margin:auto;
+  padding:20px;
+}
+
+.grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+  gap:15px;
+}
+
+.card{
+  background:var(--card);
+  padding:15px;
+  border-radius:12px;
+  box-shadow:0 4px 12px rgba(0,0,0,0.08);
+  transition:0.3s;
+}
+
+.card:hover{
+  transform:translateY(-3px);
+}
+
+label{
+  font-size:13px;
+  color:var(--muted);
+}
+
+input{
+  width:100%;
+  padding:10px;
+  margin-top:5px;
+  border-radius:8px;
+  border:1px solid #ccc;
+  outline:none;
+}
+
+button{
+  padding:10px 14px;
+  border:none;
+  border-radius:8px;
+  cursor:pointer;
+  transition:0.3s;
+}
+
+.btn{
+  background:var(--primary);
+  color:white;
+}
+
+.btn:hover{
+  background:var(--secondary);
+}
+
+.btn-secondary{
+  background:#444;
+  color:white;
+}
+
+.stats{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+  gap:15px;
+  margin-top:20px;
+}
+
+.stat{
+  padding:15px;
+  border-radius:12px;
+  background:var(--card);
+  box-shadow:0 4px 10px rgba(0,0,0,0.08);
+}
+
+.stat h3{
+  margin:0;
+  font-size:14px;
+  color:var(--muted);
+}
+
+.stat p{
+  font-size:20px;
+  margin:5px 0 0;
+  font-weight:bold;
+}
+
+.badge{
+  padding:5px 10px;
+  border-radius:20px;
+  color:white;
+  font-size:12px;
+  display:inline-block;
+}
+
+.good{background:var(--good);}
+.warn{background:var(--warn);}
+.bad{background:var(--bad);}
+
+.actions{
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+  margin-top:15px;
+}
+
+canvas{
+  margin-top:20px;
+  background:var(--card);
+  padding:10px;
+  border-radius:12px;
+}
+
+.alert{
+  padding:12px;
+  border-radius:10px;
+  color:white;
+  margin-top:10px;
+}
+
+</style>
+</head>
+
+<body>
+<header>Amazon Restock Calculator Tool</header>
+
+<div class="container">
+
+<!-- INPUTS -->
+<div class="grid">
+
+<div class="card">
+<label>Current Inventory</label>
+<input type="number" id="inventory" min="0" value="500">
+</div>
+
+<div class="card">
+<label>Average Daily Sales</label>
+<input type="number" id="dailySales" min="0" value="20">
+</div>
+
+<div class="card">
+<label>Lead Time (days)</label>
+<input type="number" id="leadTime" min="0" value="7">
+</div>
+
+<div class="card">
+<label>Safety Stock</label>
+<input type="number" id="safetyStock" min="0" value="50">
+</div>
+
+<div class="card">
+<label>Reorder Cycle (days)</label>
+<input type="number" id="reorderCycle" min="0" value="14">
+</div>
+
+</div>
+
+<!-- ACTIONS -->
+<div class="actions">
+<button class="btn" onclick="calculate()">Calculate</button>
+<button class="btn-secondary" onclick="resetForm()">Reset</button>
+<button class="btn-secondary" onclick="loadSample()">Sample Data</button>
+<button class="btn-secondary" onclick="exportCSV()">Export CSV</button>
+<button class="btn-secondary" onclick="window.print()">Print</button>
+<button class="btn-secondary" onclick="copyResults()">Copy</button>
+<button class="btn-secondary" onclick="toggleDark()">Dark Mode</button>
+</div>
+
+<!-- ALERT -->
+<div id="alertBox"></div>
+
+<!-- STATS -->
+<div class="stats">
+<div class="stat"><h3>Days Remaining</h3><p id="daysRemaining">0</p></div>
+<div class="stat"><h3>Reorder Qty</h3><p id="reorderQty">0</p></div>
+<div class="stat"><h3>Daily Sales</h3><p id="dSales">0</p></div>
+<div class="stat"><h3>Weekly Sales</h3><p id="wSales">0</p></div>
+<div class="stat"><h3>Monthly Sales</h3><p id="mSales">0</p></div>
+<div class="stat"><h3>Health Score</h3><p id="healthScore">0</p></div>
+<div class="stat"><h3>Status</h3><p id="status"><span class="badge good">Healthy</span></p></div>
+<div class="stat"><h3>Reorder Date</h3><p id="reorderDate">-</p></div>
+</div>
+
+<!-- CHARTS -->
+<canvas id="inventoryChart"></canvas>
+<canvas id="salesChart"></canvas>
+
+</div>
+
+<script>
+let inventoryChart, salesChart;
+
+function getValues(){
+  return {
+    inventory: +document.getElementById("inventory").value || 0,
+    daily: +document.getElementById("dailySales").value || 0,
+    lead: +document.getElementById("leadTime").value || 0,
+    safety: +document.getElementById("safetyStock").value || 0,
+    cycle: +document.getElementById("reorderCycle").value || 0
+  };
+}
+
+function calculate(){
+
+  const v = getValues();
+
+  if(v.daily <= 0){
+    showAlert("Daily sales must be greater than 0", "bad");
+    return;
+  }
+
+  let daysRemaining = v.inventory / v.daily;
+
+  let reorderQty = (v.daily * (v.lead + v.cycle)) + v.safety - v.inventory;
+  if(reorderQty < 0) reorderQty = 0;
+
+  let weekly = v.daily * 7;
+  let monthly = v.daily * 30;
+
+  let coverage = daysRemaining / (v.lead + v.cycle + 1);
+  let score = Math.min(100, Math.max(0, Math.round(coverage * 100)));
+
+  let status = "Healthy";
+  let badge = "good";
+
+  if(daysRemaining < v.lead){
+    status = "Critical";
+    badge = "bad";
+  } else if(daysRemaining < v.lead + 7){
+    status = "Moderate";
+    badge = "warn";
+  }
+
+  let reorderDate = new Date();
+  reorderDate.setDate(reorderDate.getDate() + Math.max(0, daysRemaining - v.lead));
+
+  document.getElementById("daysRemaining").innerText = daysRemaining.toFixed(1);
+  document.getElementById("reorderQty").innerText = Math.round(reorderQty);
+  document.getElementById("dSales").innerText = v.daily;
+  document.getElementById("wSales").innerText = weekly;
+  document.getElementById("mSales").innerText = monthly;
+  document.getElementById("healthScore").innerText = score;
+  document.getElementById("status").innerHTML = `<span class="badge ${badge}">${status}</span>`;
+  document.getElementById("reorderDate").innerText = reorderDate.toDateString();
+
+  updateCharts(v);
+}
+
+function updateCharts(v){
+
+  let labels = [];
+  let data = [];
+  let remaining = v.inventory;
+
+  for(let i=1;i<=30;i++){
+    remaining -= v.daily;
+    if(remaining < 0) remaining = 0;
+    labels.push("Day " + i);
+    data.push(remaining);
+  }
+
+  if(inventoryChart) inventoryChart.destroy();
+
+  inventoryChart = new Chart(document.getElementById("inventoryChart"), {
+    type:"line",
+    data:{
+      labels,
+      datasets:[{
+        label:"Inventory Projection",
+        data,
+        borderColor:"#1e88e5",
+        fill:false
+      }]
+    }
+  });
+
+  if(salesChart) salesChart.destroy();
+
+  salesChart = new Chart(document.getElementById("salesChart"), {
+    type:"bar",
+    data:{
+      labels:["Daily","Weekly","Monthly"],
+      datasets:[{
+        label:"Sales Velocity",
+        data:[v.daily, v.daily*7, v.daily*30],
+        backgroundColor:["#1e88e5","#0d47a1","#42a5f5"]
+      }]
+    }
+  });
+}
+
+function resetForm(){
+  document.querySelectorAll("input").forEach(i=>i.value=0);
+  calculate();
+}
+
+function loadSample(){
+  document.getElementById("inventory").value=600;
+  document.getElementById("dailySales").value=25;
+  document.getElementById("leadTime").value=8;
+  document.getElementById("safetyStock").value=40;
+  document.getElementById("reorderCycle").value=12;
+  calculate();
+}
+
+function exportCSV(){
+  const v = getValues();
+  let csv = `Metric,Value
+Days Remaining,${v.inventory/v.daily}
+Reorder Qty,${(v.daily*(v.lead+v.cycle))+v.safety-v.inventory}
+Daily Sales,${v.daily}
+Weekly Sales,${v.daily*7}
+Monthly Sales,${v.daily*30}`;
+
+  const blob = new Blob([csv], {type:"text/csv"});
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "restock-report.csv";
+  a.click();
+}
+
+function copyResults(){
+  const text = document.getElementById("daysRemaining").innerText + " days remaining, status: " +
+  document.getElementById("status").innerText;
+
+  navigator.clipboard.writeText(text);
+  alert("Copied!");
+}
+
+function toggleDark(){
+  document.body.dataset.theme =
+  document.body.dataset.theme === "dark" ? "" : "dark";
+}
+
+function showAlert(msg,type){
+  document.getElementById("alertBox").innerHTML =
+  `<div class="alert" style="background:${type==='bad'?'#e74c3c':'#f39c12'}">${msg}</div>`;
+}
+
+calculate();
+</script>
+
+</body>
+</html>
