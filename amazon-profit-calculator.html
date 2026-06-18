@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Amazon Profit Calculator</title>
+
+<style>
+    body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+        background: #f4f9ff;
+        color: #0a2a43;
+    }
+
+    header {
+        background: #1e88e5;
+        color: white;
+        padding: 18px;
+        text-align: center;
+        font-size: 22px;
+        font-weight: bold;
+    }
+
+    .container {
+        max-width: 1000px;
+        margin: auto;
+        padding: 15px;
+    }
+
+    .card {
+        background: white;
+        padding: 15px;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        margin-bottom: 15px;
+    }
+
+    .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 12px;
+    }
+
+    label {
+        font-size: 13px;
+        font-weight: bold;
+        margin-bottom: 5px;
+        display: block;
+    }
+
+    input {
+        width: 100%;
+        padding: 10px;
+        border-radius: 8px;
+        border: 1px solid #ccc;
+        outline: none;
+        font-size: 14px;
+    }
+
+    button {
+        background: #1e88e5;
+        color: white;
+        border: none;
+        padding: 12px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 15px;
+        transition: 0.3s;
+        width: 100%;
+    }
+
+    button:hover {
+        background: #1565c0;
+    }
+
+    .result {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 10px;
+    }
+
+    .box {
+        background: #e3f2fd;
+        padding: 12px;
+        border-radius: 10px;
+        text-align: center;
+    }
+
+    .box h3 {
+        margin: 5px 0;
+        font-size: 18px;
+        color: #0d47a1;
+    }
+
+    .box p {
+        margin: 0;
+        font-size: 14px;
+    }
+
+    @media (max-width: 600px) {
+        header {
+            font-size: 18px;
+        }
+    }
+</style>
+</head>
+
+<body>
+
+<header>
+    Amazon Profit Calculator Tool
+</header>
+
+<div class="container">
+
+    <div class="card">
+        <div class="grid">
+            <div>
+                <label>Product Cost ($)</label>
+                <input type="number" id="cost" placeholder="e.g. 20">
+            </div>
+
+            <div>
+                <label>Amazon Selling Price ($)</label>
+                <input type="number" id="price" placeholder="e.g. 40">
+            </div>
+
+            <div>
+                <label>Amazon Fee (%)</label>
+                <input type="number" id="fee" placeholder="e.g. 15">
+            </div>
+
+            <div>
+                <label>Shipping Cost ($)</label>
+                <input type="number" id="shipping" placeholder="e.g. 5">
+            </div>
+        </div>
+
+        <br>
+        <button onclick="calculateProfit()">Calculate Profit</button>
+    </div>
+
+    <div class="card">
+        <h3>Results</h3>
+        <div class="result">
+
+            <div class="box">
+                <h3 id="profit">$0</h3>
+                <p>Net Profit</p>
+            </div>
+
+            <div class="box">
+                <h3 id="roi">0%</h3>
+                <p>ROI</p>
+            </div>
+
+            <div class="box">
+                <h3 id="margin">0%</h3>
+                <p>Profit Margin</p>
+            </div>
+
+            <div class="box">
+                <h3 id="fees">$0</h3>
+                <p>Amazon Fees</p>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+<script>
+function calculateProfit() {
+    let cost = parseFloat(document.getElementById("cost").value) || 0;
+    let price = parseFloat(document.getElementById("price").value) || 0;
+    let feePercent = parseFloat(document.getElementById("fee").value) || 0;
+    let shipping = parseFloat(document.getElementById("shipping").value) || 0;
+
+    let fees = (price * feePercent) / 100;
+
+    let totalCost = cost + fees + shipping;
+    let profit = price - totalCost;
+
+    let roi = cost > 0 ? (profit / cost) * 100 : 0;
+    let margin = price > 0 ? (profit / price) * 100 : 0;
+
+    document.getElementById("profit").innerText = "$" + profit.toFixed(2);
+    document.getElementById("roi").innerText = roi.toFixed(2) + "%";
+    document.getElementById("margin").innerText = margin.toFixed(2) + "%";
+    document.getElementById("fees").innerText = "$" + fees.toFixed(2);
+}
+</script>
+
+</body>
+</html>
