@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Amazon Listing Optimizer</title>
+
+<style>
+    body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+        background: #f4f9ff;
+        color: #0a2a43;
+    }
+
+    header {
+        background: #1e88e5;
+        color: white;
+        padding: 18px;
+        text-align: center;
+        font-size: 22px;
+        font-weight: bold;
+    }
+
+    .container {
+        max-width: 1000px;
+        margin: auto;
+        padding: 15px;
+    }
+
+    .card {
+        background: white;
+        padding: 15px;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        margin-bottom: 15px;
+    }
+
+    textarea, input {
+        width: 100%;
+        padding: 10px;
+        border-radius: 8px;
+        border: 1px solid #ccc;
+        outline: none;
+        font-size: 14px;
+        margin-top: 5px;
+    }
+
+    button {
+        width: 100%;
+        padding: 12px;
+        background: #1e88e5;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 15px;
+        cursor: pointer;
+        transition: 0.3s;
+    }
+
+    button:hover {
+        background: #1565c0;
+    }
+
+    .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 12px;
+    }
+
+    .box {
+        background: #e3f2fd;
+        padding: 12px;
+        border-radius: 10px;
+        text-align: center;
+    }
+
+    .box h3 {
+        margin: 5px 0;
+        color: #0d47a1;
+    }
+
+    .good { color: green; font-weight: bold; }
+    .bad { color: red; font-weight: bold; }
+
+    @media (max-width: 600px) {
+        header { font-size: 18px; }
+    }
+</style>
+</head>
+
+<body>
+
+<header>
+Amazon Listing Optimizer Tool
+</header>
+
+<div class="container">
+
+    <div class="card">
+        <label>Product Title</label>
+        <input type="text" id="title" placeholder="Enter Amazon product title">
+
+        <label>Bullet Points (separate with commas)</label>
+        <textarea id="bullets" rows="4" placeholder="Bullet 1, Bullet 2, Bullet 3"></textarea>
+
+        <label>Keywords (comma separated)</label>
+        <input type="text" id="keywords" placeholder="e.g. wireless, bluetooth, earbuds">
+
+        <br><br>
+        <button onclick="analyzeListing()">Analyze Listing</button>
+    </div>
+
+    <div class="card">
+        <h3>SEO Score</h3>
+        <div class="box">
+            <h3 id="seoScore">0%</h3>
+            <p>Optimization Level</p>
+        </div>
+    </div>
+
+    <div class="card">
+        <h3>Title Analysis</h3>
+        <div id="titleAnalysis"></div>
+    </div>
+
+    <div class="card">
+        <h3>Bullet Point Optimization</h3>
+        <div id="bulletAnalysis"></div>
+    </div>
+
+    <div class="card">
+        <h3>Keyword Density</h3>
+        <div id="keywordAnalysis"></div>
+    </div>
+
+</div>
+
+<script>
+function analyzeListing() {
+    let title = document.getElementById("title").value.toLowerCase();
+    let bullets = document.getElementById("bullets").value.toLowerCase();
+    let keywords = document.getElementById("keywords").value.toLowerCase().split(",");
+
+    let score = 0;
+
+    // TITLE ANALYSIS
+    let titleWords = title.split(" ").length;
+    let titleStatus = "";
+
+    if (titleWords >= 8 && titleWords <= 15) {
+        score += 30;
+        titleStatus = "<span class='good'>Good length</span>";
+    } else {
+        titleStatus = "<span class='bad'>Improve title length (8–15 words ideal)</span>";
+    }
+
+    document.getElementById("titleAnalysis").innerHTML =
+        `Words: ${titleWords} — ${titleStatus}`;
+
+    // BULLET ANALYSIS
+    let bulletList = bullets.split(",");
+    let bulletScore = 0;
+    let bulletStatus = "";
+
+    if (bulletList.length >= 3 && bulletList.length <= 5) {
+        bulletScore = 30;
+        bulletStatus = "<span class='good'>Good number of bullet points</span>";
+    } else {
+        bulletStatus = "<span class='bad'>Use 3–5 bullet points</span>";
+    }
+
+    document.getElementById("bulletAnalysis").innerHTML =
+        `Bullets: ${bulletList.length} — ${bulletStatus}`;
+
+    score += bulletScore;
+
+    // KEYWORD DENSITY
+    let keywordResults = "";
+    let keywordScore = 0;
+
+    keywords.forEach(k => {
+        k = k.trim();
+        if (!k) return;
+
+        let regex = new RegExp(k, "g");
+        let count = (title + bullets).match(regex);
+
+        let occurrences = count ? count.length : 0;
+
+        if (occurrences >= 2) {
+            keywordScore += 10;
+            keywordResults += `<p>${k}: <span class='good'>Good density (${occurrences})</span></p>`;
+        } else if (occurrences === 1) {
+            keywordResults += `<p>${k}: Moderate (${occurrences})</p>`;
+        } else {
+            keywordResults += `<p>${k}: <span class='bad'>Missing</span></p>`;
+        }
+    });
+
+    score += Math.min(keywordScore, 40);
+
+    document.getElementById("keywordAnalysis").innerHTML = keywordResults;
+
+    // FINAL SEO SCORE
+    document.getElementById("seoScore").innerText = score + "%";
+}
+</script>
+
+</body>
+</html>
